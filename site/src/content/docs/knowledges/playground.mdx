@@ -1,0 +1,39 @@
+---
+title: コンポーネント実験場
+---
+import Quiz from '../../../components/Quiz';
+import Tooltip from '../../../components/Tooltip';
+
+この記事は、学習用コンポーネントの動作確認用ページです。
+
+## クイズコンポーネント
+
+<Quiz client:visible answer="DNS（Domain Name System）です。ドメイン名とIPアドレスを変換するシステムです。">
+  インターネット上の住所録のような役割を持つシステムは何でしょう？
+</Quiz>
+
+<Quiz client:visible answer={
+  <>
+    正解は <strong>3ウェイハンドシェイク</strong> です。<br/>
+    SYN → SYN/ACK → ACK の順で接続を確立します。
+  </>
+}>
+  TCPの接続確立手順を何と呼ぶでしょう？
+</Quiz>
+
+## ツールチップコンポーネント
+
+文章中に<Tooltip client:visible content="ARP" description="Address Resolution Protocol。IPアドレスからMACアドレスを求めるプロトコル。" />などの用語が出てきた場合、マウスカーソルを合わせると意味が表示されます。
+
+また、<Tooltip client:visible content="DHCP" description="Dynamic Host Configuration Protocol。ネットワーク設定を自動的に配布するプロトコル。" />のように、複数のツールチップを配置することも可能です。
+
+## 組み合わせ例
+
+<Quiz client:visible answer={
+  <div>
+    正解は <Tooltip client:visible content="ICMP" description="Internet Control Message Protocol。ネットワークの疎通確認やエラー通知に使われる。" /> です。<br/>
+    Pingコマンドはこのプロトコルを使用しています。
+  </div>
+}>
+  ネットワーク層で動作し、エラー通知や情報照会を行うプロトコルは何でしょう？
+</Quiz>
