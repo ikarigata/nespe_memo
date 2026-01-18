@@ -1,0 +1,151 @@
+---
+title: 無線LANセキュリティ
+---
+
+無線LANは電波を使用するため、有線LANに比べて盗聴や不正アクセスのリスクが高くなります。そのため、強力な認証と暗号化技術が不可欠です。本記事では、WPA2/WPA3を中心としたセキュリティ規格と、企業で利用される802.1X認証について解説します。
+
+## セキュリティ規格の変遷
+
+| 規格 | 策定年 | 暗号化アルゴリズム | 改ざん検知 | 認証方式 | 現状 |
+|:---|:---|:---|:---|:---|:---|
+| WEP | 1997 | RC4 | ICV | 共有鍵 | **使用禁止**（脆弱性あり） |
+| WPA | 2002 | TKIP (RC4) | Michael | PSK / 802.1X | 使用非推奨 |
+| **WPA2** | 2004 | **AES (CCMP)** | CBC-MAC | PSK / 802.1X | **現在も主流** |
+| **WPA3** | 2018 | **AES (GCMP/CCMP)** | GMAC/CBC-MAC | SAE / 802.1X | 普及拡大中 |
+
+### パーソナルモード vs エンタープライズモード
+
+| モード | 正式名称 | 認証方式 | 用途 | 特徴 |
+|:---|:---|:---|:---|:---|
+| **Personal** | WPA2-Personal<br/>(WPA2-PSK) | **PSK**<br/>(Pre-Shared Key) | 家庭・SOHO | 全端末で同じパスフレーズを使用。<br/>個別のID管理はできない。 |
+| **Enterprise** | WPA2-Enterprise | **802.1X**<br/>(EAP認証) | 企業・組織 | ユーザーごとにID/パスワードや証明書で認証。<br/>**RADIUSサーバー**が必要。 |
+
+---
+
+## IEEE 802.1X認証の仕組み
+
+企業向け無線LANで標準的に使用されるポートベース認証の枠組みです。以下の3つの要素で構成されます。
+
+1.  **サプリカント (Supplicant)**: クライアント端末（PC、スマホなど）
+2.  **オーセンティケータ (Authenticator)**: 無線LANアクセスポイント (AP)
+3.  **認証サーバー (Authentication Server)**: RADIUSサーバー
+
+### 認証シーケンス
+
+```mermaid
+sequenceDiagram
+    participant SUP as サプリカント<br/>(端末)
+    participant AP as オーセンティケータ<br/>(AP)
+    participant RADIUS as 認証サーバー<br/>(RADIUS)
+
+    Note over SUP, AP: 接続要求
+    AP->>SUP: EAP-Request/Identity<br/>(ID要求)
+    SUP->>AP: EAP-Response/Identity<br/>(ID送信)
+    AP->>RADIUS: RADIUS Access-Request<br/>(EAPメッセージをカプセル化)
+
+    Note over SUP, RADIUS: EAPによる認証プロセス<br/>(TLSトンネル確立など)
+    RADIUS-->>AP: RADIUS Access-Challenge
+    AP-->>SUP: EAP-Request
+    SUP-->>AP: EAP-Response
+    AP-->>RADIUS: RADIUS Access-Request
+
+    Note over SUP, RADIUS: 認証成功
+
+    RADIUS->>AP: **RADIUS Access-Accept**<br/>(マスターセッションキー送付)
+    AP->>SUP: EAP-Success
+
+    Note over SUP, AP: **4-way Handshake**<br/>(暗号化鍵の生成)
+    Note over SUP, AP: 通信開始 (暗号化)
+```
+
+- **EAP (Extensible Authentication Protocol)**: 認証プロトコルのコンテナ。実際の認証手順は内部のメソッド（EAP-TLSなど）によって異なります。
+- **RADIUS (Remote Authentication Dial In User Service)**: 認証・認可・アカウンティングを行うプロトコル。UDP 1812(Auth)/1813(Acct)を使用。
+
+---
+
+## EAP認証の種類
+
+試験で問われる主要なEAPメソッドの違いを整理します。
+
+```mermaid
+graph TB
+    subgraph eap_types["主なEAPメソッド"]
+        TLS["EAP-TLS"]
+        PEAP["PEAP"]
+        TTLS["EAP-TTLS"]
+    end
+
+    TLS --> T_CERT["クライアント証明書:<br/>**必要 (必須)**"]
+    TLS --> S_CERT["サーバー証明書:<br/>**必要**"]
+    TLS --> SEC["セキュリティ強度:<br/>**最強**"]
+
+    PEAP --> T_CERT2["クライアント証明書:<br/>**不要**"]
+    PEAP --> S_CERT2["サーバー証明書:<br/>**必要**"]
+    PEAP --> AUTH["クライアント認証:<br/>**ID/パスワード**"]
+
+    TTLS --> T_CERT3["クライアント証明書:<br/>**不要**"]
+    TTLS --> S_CERT3["サーバー証明書:<br/>**必要**"]
+    TTLS --> AUTH2["クライアント認証:<br/>**ID/PW, CHAP等**"]
+
+    style TLS fill:#c8e6c9
+    style PEAP fill:#fff3e0
+    style TTLS fill:#e3f2fd
+```
+
+| EAPメソッド | サーバー証明書 | クライアント証明書 | クライアント認証情報 | 特徴 |
+|:---|:---:|:---:|:---|:---|
+| **EAP-TLS** | 必要 | **必要** | 証明書 | 最も安全だが、証明書配布の手間がかかる。 |
+| **PEAP** | 必要 | 不要 | ID/パスワード | サーバー認証後にTLSトンネルを作り、その中でID/PW認証を行う。最も普及。 |
+| **EAP-TTLS** | 必要 | 不要 | ID/PW, CHAP等 | PEAPと似ているが、トンネル内の認証方式の自由度が高い。 |
+
+---
+
+## WPA3の新機能
+
+WPA2の脆弱性（KRACKsなど）への対策として登場しました。
+
+### 1. WPA3-Personal (SAE)
+- **SAE (Simultaneous Authentication of Equals)**: 従来のPSKに代わる鍵交換方式。
+- **Dragonfly Key Exchange** を使用し、辞書攻撃やオフライン総当たり攻撃を防ぎます。
+- パスワードを知っていても、通信を傍受して後から解読することが困難（前方秘匿性）。
+
+### 2. WPA3-Enterprise
+- **192ビットセキュリティモード**: 政府機関や軍事レベルのセキュリティ要件に対応（CNSA Suite）。
+- 認証サーバーの確認が必須化され、偽APへの接続リスクを低減。
+
+### 3. OWE (Opportunistic Wireless Encryption)
+- **Wi-Fi Enhanced Open**: 公衆無線LANなどのパスワードなし（オープン）ネットワークでも、通信を暗号化する仕組み。
+- 認証は行わないが、Diffie-Hellman鍵交換により盗聴を防ぐ。
+
+---
+
+## 試験対策のポイント
+
+1.  **暗号化方式の組み合わせ**:
+    - WPA2 = AES (CCMP)
+    - WPA = TKIP (RC4)
+    - WEP = RC4 (脆弱)
+2.  **802.1X認証の構成**: サプリカント、オーセンティケータ、認証サーバー（RADIUS）の役割分担。
+3.  **EAPメソッドの要件**: 「クライアント証明書が必要なのはEAP-TLS」というのが頻出。
+4.  **WPA3のキーワード**: SAE（対等な認証）、Dragonfly、OWE（オープンでも暗号化）。
+
+```mermaid
+mindmap
+  root((無線LAN<br/>セキュリティ))
+    暗号化
+      WEP 脆弱
+      WPA/TKIP
+      WPA2/AES CCMP
+      WPA3 SAE/GCMP
+    802.1X認証
+      サプリカント
+      オーセンティケータ
+      RADIUSサーバー
+    EAPメソッド
+      EAP-TLS 証明書必須
+      PEAP ID/PW
+    WPA3
+      SAE 対等認証
+      OWE オープン暗号化
+      前方秘匿性
+```

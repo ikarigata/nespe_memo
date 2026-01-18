@@ -1,0 +1,143 @@
+---
+title: Webプロトコルの進化 (HTTP/1.1, HTTP/2, HTTP/3)
+---
+
+Webの基盤となるHTTPプロトコルは、リッチなコンテンツの増加やモバイル通信の普及に合わせて進化してきました。試験では、各バージョンの違い、特にパフォーマンス改善の仕組みと、最新のHTTP/3 (QUIC) の特徴が問われます。
+
+## プロトコルの変遷と概要
+
+| バージョン | 登場時期 | トランスポート層 | 主な特徴 |
+|:---|:---|:---|:---|
+| **HTTP/1.1** | 1997 | TCP | Keep-Alive、パイプライニング（実質未使用） |
+| **HTTP/2** | 2015 | TCP | ストリーム多重化、ヘッダー圧縮、バイナリ形式 |
+| **HTTP/3** | 2022 | **UDP (QUIC)** | 高速な接続確立、パケットロス耐性、TLS 1.3統合 |
+
+---
+
+## HTTP/1.1 の課題
+
+HTTP/1.1では、1つのTCP接続で同時に1つのリクエストしか処理できませんでした（パイプライニングは実装上の問題で普及せず）。
+
+- **HOL (Head-of-Line) ブロッキング**: 先頭のリクエストの処理が遅れると、後続のリクエストもすべて待たされる現象。
+- **ヘッダーの冗長性**: 毎回同じようなヘッダー（User-Agent, Cookieなど）をテキスト形式で送信するため無駄が多い。
+
+---
+
+## HTTP/2 の革新
+
+GoogleのSPDYプロトコルをベースに策定されました。
+
+### 1. ストリーム多重化
+1つのTCP接続の中に複数の「ストリーム」を作り、リクエストとレスポンスを並列に処理します。
+
+```mermaid
+graph LR
+    subgraph tcp1["HTTP/1.1 (TCP接続)"]
+        REQ1["Req A"] --> RES1["Res A"]
+        RES1 --> REQ2["Req B"]
+        REQ2 --> RES2["Res B"]
+    end
+
+    subgraph tcp2["HTTP/2 (TCP接続)"]
+        direction TB
+        subgraph stream1["ストリーム 1"]
+            S1_REQ["Req A"]
+            S1_RES["Res A"]
+        end
+        subgraph stream2["ストリーム 2"]
+            S2_REQ["Req B"]
+            S2_RES["Res B"]
+        end
+    end
+
+    NOTE["HTTP/1.1は直列<br/>HTTP/2は並列"]
+
+    style tcp1 fill:#fff3e0
+    style tcp2 fill:#e3f2fd
+```
+
+### 2. その他の機能
+- **HPACK**: ヘッダー圧縮技術。差分のみを送信することで通信量を削減。
+- **バイナリフレーミング**: テキストではなくバイナリ形式でデータをやり取りし、解析効率を向上。
+- **サーバープッシュ**: クライアントが要求する前に、サーバー側から関連リソース（CSS, JSなど）を送りつける機能。
+
+### HTTP/2 の弱点 (TCP HOL Blocking)
+HTTPレベルのHOLブロッキングは解消しましたが、**TCPレベルのHOLブロッキング**は残りました。TCPパケットが1つでもロスすると、再送されるまで後続のすべてのストリームが止まってしまいます。
+
+---
+
+## HTTP/3 と QUIC
+
+TCPを捨て、UDP上に構築された新しいトランスポートプロトコル **QUIC** を採用しました。
+
+### プロトコルスタックの比較
+
+```mermaid
+block-beta
+    columns 2
+
+    block:http2
+        columns 1
+        H2["HTTP/2"]
+        TLS["TLS 1.2 / 1.3"]
+        TCP["TCP"]
+        IP1["IP"]
+    end
+
+    block:http3
+        columns 1
+        H3["HTTP/3"]
+        QUIC["QUIC (TLS 1.3内蔵)"]
+        UDP["UDP"]
+        IP2["IP"]
+    end
+
+    style H2 fill:#fff3e0
+    style TLS fill:#fff3e0
+    style TCP fill:#fff3e0
+
+    style H3 fill:#e3f2fd
+    style QUIC fill:#c8e6c9
+    style UDP fill:#c8e6c9
+```
+
+### HTTP/3 (QUIC) のメリット
+
+1.  **接続確立の高速化 (0-RTT / 1-RTT)**
+    - TCP+TLSではハンドシェイクに往復回数が多くかかりますが、QUICはTLS 1.3を統合しており、初回接続でも1-RTT、再接続なら0-RTT（データ送信開始まで待ち時間なし）が可能です。
+
+2.  **TCP HOLブロッキングの解消**
+    - ストリームごとに独立してパケット再送制御を行うため、あるストリームのパケットがロスしても、他のストリームは止まりません。
+
+3.  **コネクションマイグレーション**
+    - IPアドレスではなく「コネクションID」で接続を識別します。
+    - スマホがWi-Fiから4G/5Gに切り替わりIPが変わっても、通信を切断することなく継続できます。
+
+---
+
+## 試験対策のポイント
+
+1.  **各バージョンのボトルネック解消**:
+    - HTTP/1.1 HOLブロッキング → HTTP/2で多重化により解消
+    - HTTP/2 TCP HOLブロッキング → HTTP/3(QUIC)でUDP採用により解消
+2.  **トランスポート層の違い**: HTTP/1.1, 2はTCP、HTTP/3はUDP。
+3.  **QUICの特徴**: TLS 1.3が必須（統合されている）、コネクションIDによるローミング対応。
+
+```mermaid
+mindmap
+  root((Webプロトコル))
+    HTTP/1.1
+      テキスト形式
+      直列処理
+      Keep-Alive
+    HTTP/2
+      バイナリ形式
+      ストリーム多重化
+      HPACK 圧縮
+      TCPベース
+    HTTP/3
+      QUIC UDPベース
+      TLS 1.3統合
+      高速ハンドシェイク
+      接続維持 ローミング
+```
