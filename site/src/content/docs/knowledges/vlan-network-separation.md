@@ -1,0 +1,194 @@
+---
+title: VLAN・ネットワーク分離技術
+---
+
+VLAN（Virtual LAN）は、物理的な接続形態とは独立して仮想的なネットワークグループを作成する技術です。近年では、データセンターネットワークの大規模化に伴い、VXLANやEVPNといった新しい分離技術も出題されています。
+
+## VLANの基礎
+
+### VLANの種類
+
+| 種類 | 説明 | 特徴 |
+|:---|:---|:---|
+| ポートベースVLAN | スイッチのポートごとにVLAN IDを割り当てる | 設定が簡単だが、物理的な配線変更が必要な場合に手間がかかる |
+| タグVLAN | イーサネットフレームにタグ情報を付加する | 1本のリンクで複数のVLANを識別可能（トランクリンク） |
+| MACアドレスベースVLAN | MACアドレスに基づいてVLANを決定する | 端末が移動しても同じVLANに所属できる |
+
+### IEEE 802.1Q タグVLAN
+
+タグVLANでは、イーサネットフレームの送信元MACアドレスとタイプフィールドの間に**4バイトのタグ**を挿入します。
+
+```mermaid
+graph LR
+    subgraph original["通常のイーサネットフレーム"]
+        DA1[宛先MAC]
+        SA1[送信元MAC]
+        TYPE1[タイプ]
+        DATA1[データ]
+    end
+
+    subgraph tagged["802.1Q タグ付きフレーム"]
+        DA2[宛先MAC]
+        SA2[送信元MAC]
+        TAG[802.1Qタグ<br/>(4バイト)]
+        TYPE2[タイプ]
+        DATA2[データ]
+    end
+
+    original -->|"タグ挿入"| tagged
+
+    style TAG fill:#ffcdd2,stroke:#d32f2f
+```
+
+**タグの構造**:
+- **TPID (Tag Protocol Identifier)**: 0x8100 (固定)
+- **TCI (Tag Control Information)**:
+    - PCP (Priority Code Point): 優先制御用 (3bit)
+    - DEI (Drop Eligible Indicator): 廃棄適性 (1bit)
+    - **VID (VLAN ID)**: VLAN識別子 (12bit, 1-4094)
+
+### ネイティブVLAN
+トランクリンク上でタグを付けずに送受信されるVLANです。通常はVLAN 1がデフォルトですが、セキュリティ上の理由から変更することが推奨されます。
+
+---
+
+## VLAN間ルーティング
+
+異なるVLAN間の通信には、ルーターやL3スイッチによるルーティングが必要です。
+
+```mermaid
+graph TB
+    subgraph l3sw["L3スイッチ"]
+        ROUTING[("ルーティング機能")]
+        SVI10["VLAN 10<br/>インターフェース<br/>(192.168.10.1)"]
+        SVI20["VLAN 20<br/>インターフェース<br/>(192.168.20.1)"]
+    end
+
+    subgraph l2["L2スイッチング機能"]
+        PORT1["ポート1<br/>(VLAN 10)"]
+        PORT2["ポート2<br/>(VLAN 20)"]
+    end
+
+    PC_A["PC A<br/>(192.168.10.10)"]
+    PC_B["PC B<br/>(192.168.20.10)"]
+
+    PC_A --> PORT1
+    PORT1 --> SVI10
+    SVI10 <-->|"L3ルーティング"| ROUTING
+    ROUTING <--> SVI20
+    SVI20 --> PORT2
+    PORT2 --> PC_B
+
+    style ROUTING fill:#e3f2fd
+    style SVI10 fill:#fff3e0
+    style SVI20 fill:#fff3e0
+```
+
+- **SVI (Switch Virtual Interface)**: L3スイッチ内部に作成される仮想インターフェース。各VLANのデフォルトゲートウェイとして機能します。
+
+---
+
+## VXLAN (Virtual Extensible LAN)
+
+従来のVLAN ID（12bit、最大4094個）では大規模データセンターやクラウド環境で不足するため、**24bitのVNI（VXLAN Network Identifier）**を使用して最大約1600万個のセグメントを作成できる技術です。
+
+### VXLANの仕組み
+
+L2フレームをUDPパケットでカプセル化し、L3ネットワーク上でトンネリングします（L2 over L3）。
+
+```mermaid
+graph TB
+    subgraph original["元のL2フレーム"]
+        PAYLOAD["データ"]
+        L2H["L2ヘッダ"]
+    end
+
+    subgraph vxlan["VXLANパケット"]
+        OUTER_L2["外側L2ヘッダ"]
+        OUTER_IP["外側IPヘッダ"]
+        UDP["UDPヘッダ"]
+        VXLAN_H["VXLANヘッダ<br/>(VNI含む)"]
+        INNER_L2["内側L2ヘッダ"]
+        INNER_DATA["データ"]
+    end
+
+    L2H -.-> INNER_L2
+    PAYLOAD -.-> INNER_DATA
+
+    style VXLAN_H fill:#c8e6c9,stroke:#388e3c
+    style OUTER_IP fill:#bbdefb
+    style UDP fill:#bbdefb
+```
+
+- **VTEP (VXLAN Tunnel End Point)**: VXLANのカプセル化・非カプセル化を行う端点。物理スイッチや仮想スイッチ（vSwitch）がこの役割を担います。
+- **オーバーレイネットワーク**: 物理網（アンダーレイ）の上に構築される論理的なネットワーク。
+
+---
+
+## EVPN (Ethernet VPN)
+
+VXLANはデータプレーンのプロトコルですが、EVPNは**BGP (MP-BGP)** をコントロールプレーンとして使用し、VXLANネットワークの制御を行う技術です。
+
+### 従来の課題とEVPNの解決策
+
+| 課題 | 従来 (Flood & Learn) | EVPN (BGP) |
+|:---|:---|:---|
+| MACアドレス学習 | データプレーンでのフラッディングによる学習 | **コントロールプレーン (BGP) で事前にMAC情報を広告** |
+| 無駄なトラフィック | BUMトラフィックが網全体に流れる | 必要なVTEPのみに転送、ARP抑制などが可能 |
+| マルチホーミング | 冗長化が複雑 (STP等) | **Active-Active構成**が容易に実現可能 |
+
+### EVPNの動作イメージ
+
+```mermaid
+sequenceDiagram
+    participant HOST_A as ホストA
+    participant VTEP1 as VTEP1
+    participant RR as BGP RR<br/>(ルートリフレクタ)
+    participant VTEP2 as VTEP2
+    participant HOST_B as ホストB
+
+    Note over HOST_A, VTEP1: 1. ホストAが接続
+    VTEP1->>VTEP1: MAC/IPを学習
+    VTEP1->>RR: BGP Update (Type 2 Route)<br/>MAC/IP情報を広告
+    RR->>VTEP2: BGP Update (Type 2 Route)
+    VTEP2->>VTEP2: MAC/IP情報をテーブルに登録
+
+    Note over HOST_A, HOST_B: 通信開始
+    HOST_A->>VTEP1: データ送信
+    VTEP1->>VTEP2: VXLANカプセル化して送信<br/>(フラッディング不要)
+    VTEP2->>HOST_B: カプセル化解除して転送
+```
+
+**EVPNの主要なルートタイプ**:
+- **Type 2 (MAC/IP Advertisement Route)**: ホストのMACアドレスとIPアドレスを広告。
+- **Type 3 (Inclusive Multicast Ethernet Tag Route)**: BUMトラフィック（Broadcast, Unknown unicast, Multicast）の転送先VTEPを広告。
+- **Type 5 (IP Prefix Route)**: 外部ネットワークへのプレフィックス情報を広告。
+
+---
+
+## 試験対策のポイント
+
+1.  **タグVLANのフレーム構造**: 4バイトのタグがどこに挿入されるか、TPIDの値（0x8100）などを理解する。
+2.  **VXLANの目的と構造**: VLAN ID枯渇問題への対応、L2 over L3、UDPカプセル化（ポート4789）といったキーワードを押さえる。
+3.  **EVPNのメリット**: 従来の「Flood & Learn」方式との違い、BGPを使ってMACアドレスを学習する仕組み、Active-Active構成が可能な点を理解する。
+4.  **ネットワーク分離**: 物理的な分離と論理的な分離（VLAN, VRF）の違いや、セキュリティゾーンの設計における活用法。
+
+```mermaid
+mindmap
+  root((ネットワーク分離))
+    VLAN
+      タグVLAN 802.1Q
+      ポートベース
+      VLAN間ルーティング
+    仮想化技術
+      VRF Virtual Routing and Forwarding
+      オーバーレイ
+    VXLAN
+      VNI 24bit
+      UDPカプセル化
+      L2 over L3
+    EVPN
+      MP-BGP
+      コントロールプレーン学習
+      BUMトラフィック抑制
+```
