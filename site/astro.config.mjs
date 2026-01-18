@@ -11,8 +11,12 @@ export default defineConfig({
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
 			sidebar: [
 				{
-					label: 'ALL NOTES',
-					autogenerate: { directory: 'notes' },
+					label: '知識編',
+					autogenerate: { directory: 'knowledges' },
+				},
+				{
+					label: 'テクニック編',
+					autogenerate: { directory: 'skills' },
 				},
 			],
 		}),
