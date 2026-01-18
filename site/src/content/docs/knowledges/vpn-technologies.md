@@ -1,10 +1,15 @@
 ---
 title: VPN技術の比較と使い分け
 ---
+import { MermaidBox } from '../../../components/MermaidBox';
+
 
 VPN（Virtual Private Network）は、インターネットなどの公衆ネットワーク上に仮想的な専用線を構築する技術です。この記事では、IPsec-VPN、SSL-VPN、IP-VPN、広域イーサネットの違いと使い分けを整理します。
 
 ## VPN技術の全体像
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -35,9 +40,15 @@ graph TB
     style USE4 fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 ---
 
 ## インターネットVPN vs 閉域網VPN
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -66,6 +77,9 @@ graph TB
     style C3 fill:#e8f5e9
 ```
 
+</MermaidBox>
+
+
 | 項目 | インターネットVPN | 閉域網VPN |
 |:---|:---|:---|
 | 回線 | インターネット | 通信事業者の専用網 |
@@ -81,6 +95,9 @@ graph TB
 IPsecはネットワーク層（L3）で動作するセキュリティプロトコルです。
 
 ### IPsecの構成要素
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -100,6 +117,9 @@ graph TB
     style SA fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 | プロトコル | 役割 | 説明 |
 |:---|:---|:---|
 | IKE | 鍵交換 | SA（セキュリティアソシエーション）の確立 |
@@ -107,6 +127,9 @@ graph TB
 | AH | 認証のみ | 改ざん検知のみ（プロトコル番号51） |
 
 ### IKEのフェーズ
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 sequenceDiagram
@@ -132,7 +155,13 @@ sequenceDiagram
     B-->>A: 暗号化データ
 ```
 
+</MermaidBox>
+
+
 ### メインモード vs アグレッシブモード
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -163,7 +192,13 @@ graph TB
     style A4 fill:#ffcdd2
 ```
 
+</MermaidBox>
+
+
 ### トンネルモード vs トランスポートモード
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -186,6 +221,12 @@ graph TB
     style TR2 fill:#fff3e0
     style TR3 fill:#fff3e0
 ```
+
+</MermaidBox>
+
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -220,6 +261,9 @@ graph TB
     style TR_DATA fill:#ffcdd2
 ```
 
+</MermaidBox>
+
+
 ---
 
 ## SSL-VPN
@@ -227,6 +271,9 @@ graph TB
 SSL/TLSを利用したVPNで、主にリモートアクセス用途で使用されます。
 
 ### SSL-VPNの種類
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -248,6 +295,9 @@ graph TB
     style L1 fill:#e8f5e9
 ```
 
+</MermaidBox>
+
+
 | 方式 | 対応アプリ | クライアント | 特徴 |
 |:---|:---|:---|:---|
 | リバースプロキシ | Webのみ | ブラウザ | 導入が最も容易 |
@@ -255,6 +305,9 @@ graph TB
 | L2フォワーディング | 全アプリ | 仮想NIC | IPsec相当の機能 |
 
 ### IPsec-VPN vs SSL-VPN
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -282,6 +335,9 @@ graph TB
     style S4 fill:#e8f5e9
 ```
 
+</MermaidBox>
+
+
 ---
 
 ## IP-VPN（MPLS-VPN）
@@ -289,6 +345,9 @@ graph TB
 通信事業者のMPLS網を利用した閉域網VPNです。
 
 ### IP-VPNの仕組み
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -330,6 +389,9 @@ graph TB
     style P2 fill:#f3e5f5
 ```
 
+</MermaidBox>
+
+
 | 機器 | 役割 |
 |:---|:---|
 | CE（Customer Edge） | 顧客側のルーター |
@@ -337,6 +399,9 @@ graph TB
 | P（Provider） | 事業者網内部のルーター |
 
 ### MPLSラベル
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -361,6 +426,9 @@ graph TB
     style PKT3 fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 ---
 
 ## 広域イーサネット
@@ -368,6 +436,9 @@ graph TB
 通信事業者のL2網を利用したサービスで、拠点間をL2で接続します。
 
 ### 広域イーサネットの仕組み
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -396,7 +467,13 @@ graph TB
     style NOTE fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 ### IP-VPN vs 広域イーサネット
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -420,6 +497,9 @@ graph TB
     style W3 fill:#e8f5e9
 ```
 
+</MermaidBox>
+
+
 | 項目 | IP-VPN | 広域イーサネット |
 |:---|:---|:---|
 | 接続レイヤー | L3（ネットワーク層） | L2（データリンク層） |
@@ -435,6 +515,9 @@ graph TB
 GRE（Generic Routing Encapsulation）とIPsecを組み合わせた構成です。
 
 ### GREの役割
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -458,7 +541,13 @@ graph TB
     style I2 fill:#ffcdd2
 ```
 
+</MermaidBox>
+
+
 ### GRE over IPsecの構造
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -486,6 +575,9 @@ graph TB
     style DATA fill:#ffcdd2
 ```
 
+</MermaidBox>
+
+
 ---
 
 ## ローカルブレイクアウト
@@ -493,6 +585,9 @@ graph TB
 クラウドサービス向けの通信を、本社データセンターを経由せず直接インターネットへ出す構成です。
 
 ### 従来構成 vs ローカルブレイクアウト
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -522,6 +617,9 @@ graph TB
     style CLOUD2 fill:#e8f5e9
 ```
 
+</MermaidBox>
+
+
 **メリット:**
 - データセンターの回線負荷軽減
 - クラウドサービスへの遅延低減
@@ -534,6 +632,9 @@ graph TB
 ---
 
 ## VPN技術の選定フロー
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -560,6 +661,9 @@ graph TB
     style SSL fill:#e3f2fd
 ```
 
+</MermaidBox>
+
+
 ---
 
 ## VPN技術比較表
@@ -576,6 +680,9 @@ graph TB
 ---
 
 ## 試験対策のポイント
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 mindmap
@@ -597,6 +704,9 @@ mindmap
       ローカルブレイクアウト
       GRE over IPsec
 ```
+
+</MermaidBox>
+
 
 1. **IPsecの動作を理解する**
    - フェーズ1でISAKMP SA、フェーズ2でIPsec SAを確立

@@ -2,9 +2,9 @@
 title: Mermaidテスト
 ---
 
-import { MermaidScroll } from '../../../components/MermaidScroll';
+import { MermaidBox } from '../../../components/MermaidBox';
 
-<MermaidScroll client:visible>
+<MermaidBox client:visible>
 
 ```mermaid
 graph TD;
@@ -13,4 +13,4 @@ graph TD;
     B -- No --> D[NG];
 ```
 
-</MermaidScroll>
+</MermaidBox>

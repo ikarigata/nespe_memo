@@ -1,10 +1,15 @@
 ---
 title: OSI参照モデルとTCP/IPモデルの違い
 ---
+import { MermaidBox } from '../../../components/MermaidBox';
+
 
 ネットワークの学習において、**OSI参照モデル**と**TCP/IPモデル**は最も基本的かつ重要な概念です。この記事では両モデルの構造、対応関係、そして実務での使い分けについて解説します。
 
 ## 全体像：2つのモデルの位置づけ
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -27,12 +32,18 @@ graph TB
     style インターネット fill:#fce4ec
 ```
 
+</MermaidBox>
+
+
 - **OSI参照モデル**: ISO（国際標準化機構）が策定した理論的な参照モデル
 - **TCP/IPモデル**: 実際のインターネットで使われている実装ベースのモデル
 
 ---
 
 ## OSI参照モデル（7層）
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -57,6 +68,9 @@ graph TB
     style L1 fill:#f3e5f5
 ```
 
+</MermaidBox>
+
+
 | 層 | 名称 | 役割 | 代表的なプロトコル/機器 |
 |:---:|:---|:---|:---|
 | 7 | アプリケーション層 | ユーザーに直接サービスを提供 | HTTP, FTP, SMTP, DNS |
@@ -70,6 +84,9 @@ graph TB
 ---
 
 ## TCP/IPモデル（4層）
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -88,6 +105,9 @@ graph TB
     style T1 fill:#f3e5f5
 ```
 
+</MermaidBox>
+
+
 | 層 | 名称 | 役割 | 代表的なプロトコル |
 |:---:|:---|:---|:---|
 | 4 | アプリケーション層 | アプリケーション間の通信 | HTTP, FTP, SMTP, DNS, SSH |
@@ -98,6 +118,9 @@ graph TB
 ---
 
 ## 両モデルの対応関係
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -143,6 +166,9 @@ graph TB
     style T1 fill:#e1bee7
 ```
 
+</MermaidBox>
+
+
 ### 対応のポイント
 
 1. **OSIの上位3層（5〜7層）→ TCP/IPのアプリケーション層**
@@ -163,6 +189,9 @@ graph TB
 
 データが送信される際、各層でヘッダが付加されていきます。
 
+
+<MermaidBox client:visible>
+
 ```mermaid
 graph TB
     subgraph 送信側
@@ -179,6 +208,12 @@ graph TB
     P1 -->|ネットワークIF層| F1
     F1 -->|物理媒体| B1
 ```
+
+</MermaidBox>
+
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -199,6 +234,9 @@ graph TB
     style FCS fill:#f3e5f5
 ```
 
+</MermaidBox>
+
+
 | PDU名 | 層 | 付加情報 |
 |:---|:---|:---|
 | データ | アプリケーション層 | - |
@@ -211,6 +249,9 @@ graph TB
 ## 通信の流れ
 
 Webページを閲覧する例で、両モデルでの通信の流れを見てみましょう。
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 sequenceDiagram
@@ -237,9 +278,15 @@ sequenceDiagram
     Client->>Web: ACK
 ```
 
+</MermaidBox>
+
+
 ---
 
 ## 主な違いのまとめ
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -275,6 +322,9 @@ graph TB
     style T4 fill:#e8f5e9
 ```
 
+</MermaidBox>
+
+
 | 比較項目 | OSI参照モデル | TCP/IPモデル |
 |:---|:---|:---|
 | 策定組織 | ISO（国際標準化機構） | DARPA → IETF |
@@ -303,6 +353,9 @@ graph TB
 4. **両モデルの対応関係を理解する**
    - OSIの上位3層がTCP/IPの1層に対応することがポイント
 
+
+<MermaidBox client:visible>
+
 ```mermaid
 mindmap
   root((試験の<br/>頻出ポイント))
@@ -321,3 +374,5 @@ mindmap
       パケット
       フレーム
 ```
+
+</MermaidBox>
