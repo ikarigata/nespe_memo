@@ -1,6 +1,8 @@
 import React from 'react';
 import { TransformWrapper, TransformComponent, useControls } from 'react-zoom-pan-pinch';
 
+const wheelConfig = { step: 0.1 };
+
 const Controls = () => {
   const { resetTransform } = useControls();
   return (
