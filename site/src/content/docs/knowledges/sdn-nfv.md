@@ -1,10 +1,15 @@
 ---
 title: SDN・NFVとネットワーク仮想化
 ---
+import { MermaidBox } from '../../../components/MermaidBox';
+
 
 ネットワークの仮想化・ソフトウェア化は現代のネットワーク設計に欠かせない技術です。この記事では、SDN、NFV、SD-WANの概念と仕組みを整理します。
 
 ## ネットワーク仮想化の全体像
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -23,11 +28,17 @@ graph TB
     style SDWAN fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 ---
 
 ## SDN（Software-Defined Networking）
 
 ### 従来のネットワーク vs SDN
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -65,6 +76,9 @@ graph TB
     style DP4 fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 | 項目 | 従来 | SDN |
 |:---|:---|:---|
 | 制御 | 各機器が個別に判断 | コントローラーが集中制御 |
@@ -73,6 +87,9 @@ graph TB
 | 運用コスト | 高い | 低い |
 
 ### SDNの3層アーキテクチャ
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -114,6 +131,9 @@ graph TB
     style SW3 fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 | 層 | 役割 | 例 |
 |:---|:---|:---|
 | アプリケーション層 | ネットワーク機能の実装 | 監視、QoS、セキュリティ |
@@ -121,6 +141,9 @@ graph TB
 | インフラ層 | パケット転送 | OpenFlowスイッチ |
 
 ### API
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -150,6 +173,9 @@ graph TB
     style SB3 fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 ---
 
 ## OpenFlow
@@ -157,6 +183,9 @@ graph TB
 SDNを実現するための代表的なプロトコルです。
 
 ### OpenFlowの構成要素
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -181,7 +210,13 @@ graph TB
     style METER_TABLE fill:#f3e5f5
 ```
 
+</MermaidBox>
+
+
 ### フローテーブル
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -205,7 +240,13 @@ graph TB
     style INSTRUCTION fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 ### パケット処理の流れ
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 sequenceDiagram
@@ -226,7 +267,13 @@ sequenceDiagram
     end
 ```
 
+</MermaidBox>
+
+
 ### OpenFlowメッセージ
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -257,11 +304,17 @@ graph TB
     style ECHO fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 ---
 
 ## NFV（Network Functions Virtualization）
 
 ### NFVの概念
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -289,6 +342,9 @@ graph TB
     style VM3 fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 | 項目 | 従来（専用機器） | NFV |
 |:---|:---|:---|
 | ハードウェア | ベンダー専用 | 汎用サーバー |
@@ -298,6 +354,9 @@ graph TB
 | 柔軟性 | 低い | 高い |
 
 ### NFVアーキテクチャ
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -338,7 +397,13 @@ graph TB
     style MANO fill:#ffcdd2
 ```
 
+</MermaidBox>
+
+
 ### NFV MANOの構成
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -357,6 +422,9 @@ graph TB
     style VIM fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 | コンポーネント | 役割 |
 |:---|:---|
 | NFVO | ネットワークサービスのオーケストレーション |
@@ -366,6 +434,9 @@ graph TB
 ---
 
 ## SDN と NFV の関係
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -396,6 +467,9 @@ graph TB
     style SYNERGY fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 | 観点 | SDN | NFV |
 |:---|:---|:---|
 | 対象 | ネットワーク制御 | ネットワーク機能 |
@@ -408,6 +482,9 @@ graph TB
 ## SD-WAN（Software-Defined WAN）
 
 ### SD-WANの概要
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -448,7 +525,13 @@ graph TB
     style EDGE3 fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 ### SD-WANの主要機能
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -469,7 +552,13 @@ graph TB
     style ZTP fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 ### ローカルブレイクアウト
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -493,12 +582,18 @@ graph TB
     style NOTE fill:#f3e5f5
 ```
 
+</MermaidBox>
+
+
 **メリット:**
 - データセンターの回線負荷軽減
 - クラウドサービスへの遅延低減
 - コスト削減
 
 ### 従来のWAN vs SD-WAN
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -528,6 +623,9 @@ graph TB
     style S4 fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 | 項目 | 従来WAN | SD-WAN |
 |:---|:---|:---|
 | 回線 | MPLS主体 | MPLS + インターネット + LTE |
@@ -541,6 +639,9 @@ graph TB
 ## VXLAN（Virtual Extensible LAN）
 
 ### VXLANの概要
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -577,7 +678,13 @@ graph TB
     style VNI2 fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 ### VXLANヘッダ構造
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -606,6 +713,9 @@ graph TB
     style INNER_IP fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 | 特徴 | 説明 |
 |:---|:---|
 | VNI | 24ビット（約1600万のネットワーク識別子） |
@@ -628,6 +738,9 @@ graph TB
 ---
 
 ## 試験対策のポイント
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 mindmap
@@ -657,6 +770,9 @@ mindmap
       UDPカプセル化
       VTEP
 ```
+
+</MermaidBox>
+
 
 1. **SDNの3層を理解する**
    - アプリケーション層、コントロール層、インフラ層

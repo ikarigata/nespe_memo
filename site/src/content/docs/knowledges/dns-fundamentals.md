@@ -1,10 +1,15 @@
 ---
 title: DNSの仕組みと設計
 ---
+import { MermaidBox } from '../../../components/MermaidBox';
+
 
 DNS（Domain Name System）は、ドメイン名とIPアドレスを相互に変換する分散データベースシステムです。この記事では、DNSの動作原理から設計・セキュリティまでを整理します。
 
 ## DNSの役割
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -26,9 +31,15 @@ graph TB
     style WEB fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 ---
 
 ## DNSの階層構造
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -67,6 +78,9 @@ graph TB
     style MAIL fill:#e3f2fd
 ```
 
+</MermaidBox>
+
+
 | レベル | 説明 | 例 |
 |:---|:---|:---|
 | ルート | 最上位、「.」で表記 | . |
@@ -77,6 +91,9 @@ graph TB
 ---
 
 ## DNSサーバーの種類
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -102,6 +119,9 @@ graph TB
     style FORWARDER fill:#e3f2fd
 ```
 
+</MermaidBox>
+
+
 | 種類 | 役割 | 特徴 |
 |:---|:---|:---|
 | プライマリ | ゾーン情報の原本を保持 | ゾーンファイルを直接管理 |
@@ -114,6 +134,9 @@ graph TB
 ## 名前解決の流れ
 
 ### 再帰クエリと反復クエリ
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 sequenceDiagram
@@ -140,6 +163,12 @@ sequenceDiagram
     Cache-->>Client: 93.184.216.34
 ```
 
+</MermaidBox>
+
+
+
+<MermaidBox client:visible>
+
 ```mermaid
 graph TB
     subgraph query_types["クエリの種類"]
@@ -164,9 +193,15 @@ graph TB
     style I3 fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 ---
 
 ## DNSレコードタイプ
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -193,6 +228,9 @@ graph TB
     style SRV fill:#e8f5e9
 ```
 
+</MermaidBox>
+
+
 | レコード | 用途 | 例 |
 |:---|:---|:---|
 | A | ホスト名→IPv4 | www IN A 192.168.1.1 |
@@ -206,6 +244,9 @@ graph TB
 | SRV | サービスの場所 | _ldap._tcp IN SRV ... |
 
 ### MXレコードの優先度
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -227,6 +268,9 @@ graph TB
     style MX3 fill:#ffcdd2
 ```
 
+</MermaidBox>
+
+
 **ポイント:** 優先度の数値が小さいほど優先される
 
 ---
@@ -234,6 +278,9 @@ graph TB
 ## ゾーン転送
 
 ### AXFR と IXFR
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -264,7 +311,13 @@ graph TB
     style I3 fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 ### ゾーン転送のトリガー
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 sequenceDiagram
@@ -287,7 +340,13 @@ sequenceDiagram
     P-->>S: 差分データ
 ```
 
+</MermaidBox>
+
+
 ### SOAレコードの構成
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -307,6 +366,9 @@ graph TB
     style EXPIRE fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 | フィールド | 説明 | 典型値 |
 |:---|:---|:---|
 | SERIAL | 変更を示す番号（増加させる） | YYYYMMDDnn |
@@ -318,6 +380,9 @@ graph TB
 ---
 
 ## DNSキャッシュとTTL
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -341,6 +406,9 @@ graph TB
     style EXPIRED fill:#ffcdd2
 ```
 
+</MermaidBox>
+
+
 **TTL設計のポイント:**
 - 長いTTL: キャッシュ効果大、変更反映が遅い
 - 短いTTL: 変更反映が速い、問い合わせ負荷増大
@@ -351,6 +419,9 @@ graph TB
 ## DNSセキュリティ
 
 ### キャッシュポイズニング
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -373,7 +444,13 @@ graph TB
     style ATTACKER fill:#ff8a80
 ```
 
+</MermaidBox>
+
+
 ### 対策
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -395,7 +472,13 @@ graph TB
     style RATE fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 ### DNSSEC
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -423,6 +506,9 @@ graph TB
     style DS fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 | レコード | 役割 |
 |:---|:---|
 | DNSKEY | 公開鍵を格納 |
@@ -435,6 +521,9 @@ graph TB
 ## DNS設計のベストプラクティス
 
 ### 冗長構成
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -463,7 +552,13 @@ graph TB
     style SECONDARY2 fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 ### 内部DNS/外部DNS分離
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -490,6 +585,9 @@ graph TB
     style EXT_REC fill:#fff3e0
     style INT_REC fill:#c8e6c9
 ```
+
+</MermaidBox>
+
 
 **スプリットDNSのメリット:**
 - 内部サーバー情報を外部に公開しない
@@ -535,6 +633,9 @@ blog    IN CNAME www
 
 ## 試験対策のポイント
 
+
+<MermaidBox client:visible>
+
 ```mermaid
 mindmap
   root((DNS<br/>の要点))
@@ -560,6 +661,9 @@ mindmap
       DNSSEC
       スプリットDNS
 ```
+
+</MermaidBox>
+
 
 1. **クエリの種類を理解する**
    - 再帰クエリ: クライアント→キャッシュDNS

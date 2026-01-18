@@ -1,10 +1,15 @@
 ---
 title: レイヤーごとの冗長化技術の整理
 ---
+import { MermaidBox } from '../../../components/MermaidBox';
+
 
 ネットワークの可用性を高めるために、各レイヤーで様々な冗長化技術が使われています。この記事では、OSI参照モデルの各層における代表的な冗長化技術を整理します。
 
 ## 冗長化の全体像
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -30,9 +35,15 @@ graph TB
     style M3 fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 ---
 
 ## レイヤー別 冗長化技術マップ
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -85,11 +96,17 @@ graph TB
     style E3 fill:#f3e5f5
 ```
 
+</MermaidBox>
+
+
 ---
 
 ## L1: 物理層の冗長化
 
 物理層では、ハードウェアそのものの冗長化を行います。
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -122,6 +139,9 @@ graph TB
     style D2 fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 | 技術 | 説明 | 効果 |
 |:---|:---|:---|
 | 冗長リンク | 複数の物理回線を用意 | 回線障害時の継続運用 |
@@ -136,6 +156,9 @@ graph TB
 ### STP（スパニングツリープロトコル）
 
 L2ネットワークでループを防止しながら冗長経路を確保します。
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -158,6 +181,12 @@ graph TB
     style SW2 fill:#c8e6c9
     style SW3 fill:#bbdefb
 ```
+
+</MermaidBox>
+
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -187,6 +216,9 @@ graph TB
     style F3 fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 | プロトコル | 収束時間 | 特徴 |
 |:---|:---|:---|
 | STP（IEEE 802.1D） | 30〜50秒 | 標準プロトコル |
@@ -196,6 +228,9 @@ graph TB
 ### リンクアグリゲーション（LACP）
 
 複数の物理リンクを1つの論理リンクとして束ねます。
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -221,6 +256,9 @@ graph TB
     style L4 fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 **メリット:**
 - 帯域幅の増加（例: 1Gbps × 4 = 4Gbps）
 - 1本が故障しても残りで通信継続
@@ -229,6 +267,9 @@ graph TB
 ### スタック構成
 
 複数のスイッチを論理的に1台として扱います。
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -252,9 +293,15 @@ graph TB
     style CABLE fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 ### MC-LAG（マルチシャーシLAG）
 
 異なる筐体間でリンクアグリゲーションを実現します。
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -278,6 +325,9 @@ graph TB
     style ICL fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 **メリット:**
 - スイッチ障害時も通信継続
 - STPを使わずにループフリー
@@ -290,6 +340,9 @@ graph TB
 ### VRRP / HSRP
 
 デフォルトゲートウェイの冗長化を実現します。
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -315,6 +368,12 @@ graph TB
     style CLIENT fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
+
+<MermaidBox client:visible>
+
 ```mermaid
 graph TB
     subgraph normal["通常時"]
@@ -339,6 +398,9 @@ graph TB
     style B2 fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 | プロトコル | 標準 | 特徴 |
 |:---|:---|:---|
 | VRRP | RFC 5798 | 標準プロトコル |
@@ -348,6 +410,9 @@ graph TB
 ### ECMP（Equal-Cost Multi-Path）
 
 同一コストの複数経路で負荷分散します。
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -374,6 +439,9 @@ graph TB
     style P3 fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 **特徴:**
 - 複数経路にトラフィックを分散
 - 1経路障害時は残りの経路で継続
@@ -382,6 +450,9 @@ graph TB
 ### 動的ルーティングプロトコル
 
 障害時に自動で経路を再計算します。
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -403,6 +474,9 @@ graph TB
     style R4 fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 | プロトコル | 種別 | 収束速度 | 用途 |
 |:---|:---|:---|:---|
 | OSPF | リンクステート | 高速 | 企業内ネットワーク |
@@ -416,6 +490,9 @@ graph TB
 ### ロードバランサー
 
 複数のサーバーにトラフィックを分散します。
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -448,6 +525,9 @@ graph TB
     style S3 fill:#e1f5fe
 ```
 
+</MermaidBox>
+
+
 | 種別 | 判断基準 | 特徴 |
 |:---|:---|:---|
 | L4 LB | IP/ポート | 高速、シンプル |
@@ -456,6 +536,9 @@ graph TB
 ### DNSラウンドロビン
 
 DNSで複数のIPアドレスを返却して分散します。
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -490,6 +573,9 @@ graph TB
     style W3 fill:#e1f5fe
 ```
 
+</MermaidBox>
+
+
 **注意点:**
 - ヘルスチェック機能がない
 - セッション維持が困難
@@ -500,6 +586,9 @@ graph TB
 ## 冗長化構成パターン
 
 ### アクティブ-スタンバイ
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -519,12 +608,18 @@ graph TB
     style SYNC fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 **特徴:**
 - 1台がアクティブ、1台が待機
 - 障害時にスタンバイが昇格
 - リソース効率は50%
 
 ### アクティブ-アクティブ
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -547,6 +642,9 @@ graph TB
     style NODE2 fill:#c8e6c9
     style SYNC fill:#fff3e0
 ```
+
+</MermaidBox>
+
 
 **特徴:**
 - 両方がトラフィックを処理
@@ -572,6 +670,9 @@ graph TB
 
 ## 試験対策のポイント
 
+
+<MermaidBox client:visible>
+
 ```mermaid
 mindmap
   root((冗長化技術<br/>の要点))
@@ -593,6 +694,9 @@ mindmap
       収束時間
       構成パターン
 ```
+
+</MermaidBox>
+
 
 1. **各技術の動作原理を理解する**
    - STPのポート状態遷移
