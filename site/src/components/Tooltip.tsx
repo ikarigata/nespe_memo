@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, type ReactNode } from 'react';
 
-const Tooltip = ({ content, description }) => {
+interface TooltipProps {
+  content: ReactNode;
+  description: ReactNode;
+}
+
+const Tooltip = ({ content, description }: TooltipProps) => {
   const [isVisible, setIsVisible] = useState(false);
 
   return (
