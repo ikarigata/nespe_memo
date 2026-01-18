@@ -1,0 +1,611 @@
+---
+title: レイヤーごとの冗長化技術の整理
+---
+
+ネットワークの可用性を高めるために、各レイヤーで様々な冗長化技術が使われています。この記事では、OSI参照モデルの各層における代表的な冗長化技術を整理します。
+
+## 冗長化の全体像
+
+```mermaid
+graph TB
+    subgraph goal["冗長化の目的"]
+        G1["単一障害点<br/>（SPOF）の排除"]
+        G2["サービス継続性<br/>の確保"]
+        G3["負荷分散による<br/>パフォーマンス向上"]
+    end
+
+    subgraph method["実現方法"]
+        M1["機器の二重化"]
+        M2["経路の多重化"]
+        M3["自動切り替え<br/>（フェイルオーバー）"]
+    end
+
+    goal --> method
+
+    style G1 fill:#ffcdd2
+    style G2 fill:#c8e6c9
+    style G3 fill:#bbdefb
+    style M1 fill:#fff3e0
+    style M2 fill:#fff3e0
+    style M3 fill:#fff3e0
+```
+
+---
+
+## レイヤー別 冗長化技術マップ
+
+```mermaid
+graph TB
+    subgraph L7["L7 アプリケーション層"]
+        A1["DNSラウンドロビン"]
+        A2["L7ロードバランサー"]
+        A3["CDN"]
+    end
+
+    subgraph L4["L4 トランスポート層"]
+        B1["L4ロードバランサー"]
+        B2["セッション維持"]
+    end
+
+    subgraph L3["L3 ネットワーク層"]
+        C1["VRRP / HSRP"]
+        C2["ECMP"]
+        C3["動的ルーティング<br/>OSPF / BGP"]
+    end
+
+    subgraph L2["L2 データリンク層"]
+        D1["STP / RSTP"]
+        D2["リンクアグリゲーション<br/>（LACP）"]
+        D3["スタック構成"]
+        D4["MC-LAG"]
+    end
+
+    subgraph L1["L1 物理層"]
+        E1["冗長リンク"]
+        E2["冗長電源"]
+        E3["機器の二重化"]
+    end
+
+    L7 --> L4 --> L3 --> L2 --> L1
+
+    style A1 fill:#e1f5fe
+    style A2 fill:#e1f5fe
+    style A3 fill:#e1f5fe
+    style B1 fill:#fff3e0
+    style B2 fill:#fff3e0
+    style C1 fill:#e8f5e9
+    style C2 fill:#e8f5e9
+    style C3 fill:#e8f5e9
+    style D1 fill:#fce4ec
+    style D2 fill:#fce4ec
+    style D3 fill:#fce4ec
+    style D4 fill:#fce4ec
+    style E1 fill:#f3e5f5
+    style E2 fill:#f3e5f5
+    style E3 fill:#f3e5f5
+```
+
+---
+
+## L1: 物理層の冗長化
+
+物理層では、ハードウェアそのものの冗長化を行います。
+
+```mermaid
+graph TB
+    subgraph physical["物理層の冗長化"]
+        subgraph link["リンクの冗長化"]
+            L1["メインリンク"]
+            L2["バックアップリンク"]
+        end
+
+        subgraph power["電源の冗長化"]
+            P1["電源ユニットA"]
+            P2["電源ユニットB"]
+        end
+
+        subgraph device["機器の冗長化"]
+            D1["メイン機器"]
+            D2["予備機器"]
+        end
+    end
+
+    link --> switch["スイッチ"]
+    power --> switch
+    device --> network["ネットワーク"]
+
+    style L1 fill:#c8e6c9
+    style L2 fill:#c8e6c9
+    style P1 fill:#bbdefb
+    style P2 fill:#bbdefb
+    style D1 fill:#fff3e0
+    style D2 fill:#fff3e0
+```
+
+| 技術 | 説明 | 効果 |
+|:---|:---|:---|
+| 冗長リンク | 複数の物理回線を用意 | 回線障害時の継続運用 |
+| 冗長電源 | 複数の電源ユニットを搭載 | 電源障害時の継続運用 |
+| UPS | 無停電電源装置 | 停電時の継続運用 |
+| コールドスタンバイ | 予備機器を用意 | 機器故障時の交換 |
+
+---
+
+## L2: データリンク層の冗長化
+
+### STP（スパニングツリープロトコル）
+
+L2ネットワークでループを防止しながら冗長経路を確保します。
+
+```mermaid
+graph TB
+    subgraph stp["STPによる冗長化"]
+        ROOT["ルートブリッジ<br/>（優先度最小）"]
+
+        SW1["スイッチA<br/>指定ポート"]
+        SW2["スイッチB<br/>指定ポート"]
+
+        SW3["スイッチC"]
+    end
+
+    ROOT -->|"アクティブ"| SW1
+    ROOT -->|"アクティブ"| SW2
+    SW1 -->|"アクティブ"| SW3
+    SW2 -.->|"ブロッキング<br/>（待機）"| SW3
+
+    style ROOT fill:#ffcdd2
+    style SW1 fill:#c8e6c9
+    style SW2 fill:#c8e6c9
+    style SW3 fill:#bbdefb
+```
+
+```mermaid
+graph TB
+    subgraph normal["通常時"]
+        N1["ルートブリッジ"]
+        N2["スイッチA"]
+        N3["スイッチB"]
+        N1 -->|"転送"| N2
+        N2 -->|"転送"| N3
+        N1 -.->|"ブロック"| N3
+    end
+
+    subgraph failover["障害時（自動切替）"]
+        F1["ルートブリッジ"]
+        F2["スイッチA<br/>（障害）"]
+        F3["スイッチB"]
+        F1 -->|"転送"| F3
+    end
+
+    normal -->|"障害発生"| failover
+
+    style N1 fill:#c8e6c9
+    style N2 fill:#c8e6c9
+    style N3 fill:#c8e6c9
+    style F1 fill:#c8e6c9
+    style F2 fill:#ffcdd2
+    style F3 fill:#c8e6c9
+```
+
+| プロトコル | 収束時間 | 特徴 |
+|:---|:---|:---|
+| STP（IEEE 802.1D） | 30〜50秒 | 標準プロトコル |
+| RSTP（IEEE 802.1w） | 数秒以内 | 高速収束 |
+| MSTP（IEEE 802.1s） | 数秒以内 | VLAN対応 |
+
+### リンクアグリゲーション（LACP）
+
+複数の物理リンクを1つの論理リンクとして束ねます。
+
+```mermaid
+graph TB
+    subgraph lacp["リンクアグリゲーション"]
+        SW1["スイッチA"]
+        SW2["スイッチB"]
+
+        subgraph bundle["論理リンク（LAG）"]
+            L1["物理リンク1"]
+            L2["物理リンク2"]
+            L3["物理リンク3"]
+            L4["物理リンク4"]
+        end
+    end
+
+    SW1 --> bundle --> SW2
+
+    style SW1 fill:#bbdefb
+    style SW2 fill:#bbdefb
+    style L1 fill:#c8e6c9
+    style L2 fill:#c8e6c9
+    style L3 fill:#c8e6c9
+    style L4 fill:#c8e6c9
+```
+
+**メリット:**
+- 帯域幅の増加（例: 1Gbps × 4 = 4Gbps）
+- 1本が故障しても残りで通信継続
+- 負荷分散による効率化
+
+### スタック構成
+
+複数のスイッチを論理的に1台として扱います。
+
+```mermaid
+graph TB
+    subgraph stack["スタック構成"]
+        subgraph logical["論理的に1台のスイッチ"]
+            SW1["スイッチ1<br/>（マスター）"]
+            SW2["スイッチ2<br/>（メンバー）"]
+            SW3["スイッチ3<br/>（メンバー）"]
+        end
+
+        CABLE["スタックケーブル<br/>（専用接続）"]
+    end
+
+    SW1 <--> CABLE
+    SW2 <--> CABLE
+    SW3 <--> CABLE
+
+    style SW1 fill:#ffcdd2
+    style SW2 fill:#c8e6c9
+    style SW3 fill:#c8e6c9
+    style CABLE fill:#fff3e0
+```
+
+### MC-LAG（マルチシャーシLAG）
+
+異なる筐体間でリンクアグリゲーションを実現します。
+
+```mermaid
+graph TB
+    subgraph mclag["MC-LAG構成"]
+        SERVER["サーバー"]
+
+        subgraph pair["MC-LAGペア"]
+            SW1["スイッチA"]
+            SW2["スイッチB"]
+            ICL["ピアリンク<br/>（同期用）"]
+        end
+    end
+
+    SERVER -->|"リンク1"| SW1
+    SERVER -->|"リンク2"| SW2
+    SW1 <-->|"ICL"| SW2
+
+    style SERVER fill:#bbdefb
+    style SW1 fill:#c8e6c9
+    style SW2 fill:#c8e6c9
+    style ICL fill:#fff3e0
+```
+
+**メリット:**
+- スイッチ障害時も通信継続
+- STPを使わずにループフリー
+- アクティブ-アクティブ構成
+
+---
+
+## L3: ネットワーク層の冗長化
+
+### VRRP / HSRP
+
+デフォルトゲートウェイの冗長化を実現します。
+
+```mermaid
+graph TB
+    subgraph vrrp["VRRP構成"]
+        VIP["仮想IP<br/>192.168.1.1<br/>（デフォルトGW）"]
+
+        subgraph routers["ルーター群"]
+            R1["マスター<br/>192.168.1.2<br/>優先度: 200"]
+            R2["バックアップ<br/>192.168.1.3<br/>優先度: 100"]
+        end
+
+        CLIENT["クライアント"]
+    end
+
+    CLIENT -->|"デフォルトGW"| VIP
+    VIP --> R1
+    VIP -.->|"待機"| R2
+    R1 <-->|"VRRPアドバタイズ"| R2
+
+    style VIP fill:#ffcdd2
+    style R1 fill:#c8e6c9
+    style R2 fill:#bbdefb
+    style CLIENT fill:#fff3e0
+```
+
+```mermaid
+graph TB
+    subgraph normal["通常時"]
+        V1["仮想IP"]
+        M1["マスター<br/>（アクティブ）"]
+        B1["バックアップ<br/>（待機）"]
+        V1 --> M1
+    end
+
+    subgraph failover["障害時"]
+        V2["仮想IP"]
+        M2["マスター<br/>（障害）"]
+        B2["バックアップ<br/>（昇格）"]
+        V2 --> B2
+    end
+
+    normal -->|"マスター障害"| failover
+
+    style M1 fill:#c8e6c9
+    style B1 fill:#bbdefb
+    style M2 fill:#ffcdd2
+    style B2 fill:#c8e6c9
+```
+
+| プロトコル | 標準 | 特徴 |
+|:---|:---|:---|
+| VRRP | RFC 5798 | 標準プロトコル |
+| HSRP | Cisco独自 | Cisco機器で使用 |
+| GLBP | Cisco独自 | 負荷分散対応 |
+
+### ECMP（Equal-Cost Multi-Path）
+
+同一コストの複数経路で負荷分散します。
+
+```mermaid
+graph TB
+    subgraph ecmp["ECMP構成"]
+        SRC["送信元<br/>ルーター"]
+
+        subgraph paths["等コスト経路"]
+            P1["経路1<br/>コスト: 10"]
+            P2["経路2<br/>コスト: 10"]
+            P3["経路3<br/>コスト: 10"]
+        end
+
+        DST["宛先<br/>ルーター"]
+    end
+
+    SRC --> P1 --> DST
+    SRC --> P2 --> DST
+    SRC --> P3 --> DST
+
+    style SRC fill:#bbdefb
+    style DST fill:#bbdefb
+    style P1 fill:#c8e6c9
+    style P2 fill:#c8e6c9
+    style P3 fill:#c8e6c9
+```
+
+**特徴:**
+- 複数経路にトラフィックを分散
+- 1経路障害時は残りの経路で継続
+- ルーティングプロトコル（OSPF等）と連携
+
+### 動的ルーティングプロトコル
+
+障害時に自動で経路を再計算します。
+
+```mermaid
+graph TB
+    subgraph routing["動的ルーティングによる冗長化"]
+        R1["ルーターA"]
+        R2["ルーターB"]
+        R3["ルーターC"]
+        R4["ルーターD"]
+    end
+
+    R1 <-->|"OSPF<br/>コスト:10"| R2
+    R2 <-->|"OSPF<br/>コスト:10"| R4
+    R1 <-->|"OSPF<br/>コスト:10"| R3
+    R3 <-->|"OSPF<br/>コスト:10"| R4
+
+    style R1 fill:#c8e6c9
+    style R2 fill:#c8e6c9
+    style R3 fill:#c8e6c9
+    style R4 fill:#c8e6c9
+```
+
+| プロトコル | 種別 | 収束速度 | 用途 |
+|:---|:---|:---|:---|
+| OSPF | リンクステート | 高速 | 企業内ネットワーク |
+| BGP | パスベクトル | 中程度 | ISP間接続 |
+| EIGRP | ハイブリッド | 高速 | Cisco環境 |
+
+---
+
+## L4-L7: 上位層の冗長化
+
+### ロードバランサー
+
+複数のサーバーにトラフィックを分散します。
+
+```mermaid
+graph TB
+    subgraph lb["ロードバランサー構成"]
+        CLIENT["クライアント"]
+
+        subgraph lbpair["LB冗長構成"]
+            LB1["ロードバランサー<br/>（アクティブ）"]
+            LB2["ロードバランサー<br/>（スタンバイ）"]
+        end
+
+        subgraph servers["サーバープール"]
+            S1["サーバー1"]
+            S2["サーバー2"]
+            S3["サーバー3"]
+        end
+    end
+
+    CLIENT --> LB1
+    LB1 <-.->|"同期"| LB2
+    LB1 --> S1
+    LB1 --> S2
+    LB1 --> S3
+
+    style CLIENT fill:#fff3e0
+    style LB1 fill:#c8e6c9
+    style LB2 fill:#bbdefb
+    style S1 fill:#e1f5fe
+    style S2 fill:#e1f5fe
+    style S3 fill:#e1f5fe
+```
+
+| 種別 | 判断基準 | 特徴 |
+|:---|:---|:---|
+| L4 LB | IP/ポート | 高速、シンプル |
+| L7 LB | HTTPヘッダ、URL | 柔軟な振り分け |
+
+### DNSラウンドロビン
+
+DNSで複数のIPアドレスを返却して分散します。
+
+```mermaid
+graph TB
+    subgraph dns["DNSラウンドロビン"]
+        CLIENT["クライアント"]
+        DNS["DNSサーバー"]
+
+        subgraph response["DNS応答（順番に返却）"]
+            IP1["1回目: 10.0.0.1"]
+            IP2["2回目: 10.0.0.2"]
+            IP3["3回目: 10.0.0.3"]
+        end
+
+        subgraph servers["Webサーバー群"]
+            W1["10.0.0.1"]
+            W2["10.0.0.2"]
+            W3["10.0.0.3"]
+        end
+    end
+
+    CLIENT -->|"www.example.comは?"| DNS
+    DNS --> response
+    response --> servers
+
+    style CLIENT fill:#fff3e0
+    style DNS fill:#bbdefb
+    style IP1 fill:#c8e6c9
+    style IP2 fill:#c8e6c9
+    style IP3 fill:#c8e6c9
+    style W1 fill:#e1f5fe
+    style W2 fill:#e1f5fe
+    style W3 fill:#e1f5fe
+```
+
+**注意点:**
+- ヘルスチェック機能がない
+- セッション維持が困難
+- 障害検知が遅い
+
+---
+
+## 冗長化構成パターン
+
+### アクティブ-スタンバイ
+
+```mermaid
+graph TB
+    subgraph active_standby["アクティブ-スタンバイ"]
+        TRAFFIC["トラフィック"]
+        ACTIVE["アクティブ機<br/>（処理中）"]
+        STANDBY["スタンバイ機<br/>（待機中）"]
+        SYNC["状態同期"]
+    end
+
+    TRAFFIC --> ACTIVE
+    ACTIVE <-->|"ハートビート"| STANDBY
+    ACTIVE -->|"設定・状態"| SYNC --> STANDBY
+
+    style ACTIVE fill:#c8e6c9
+    style STANDBY fill:#bbdefb
+    style SYNC fill:#fff3e0
+```
+
+**特徴:**
+- 1台がアクティブ、1台が待機
+- 障害時にスタンバイが昇格
+- リソース効率は50%
+
+### アクティブ-アクティブ
+
+```mermaid
+graph TB
+    subgraph active_active["アクティブ-アクティブ"]
+        TRAFFIC["トラフィック"]
+
+        subgraph nodes["両方がアクティブ"]
+            NODE1["ノード1<br/>（処理中）"]
+            NODE2["ノード2<br/>（処理中）"]
+        end
+
+        SYNC["状態同期"]
+    end
+
+    TRAFFIC --> NODE1
+    TRAFFIC --> NODE2
+    NODE1 <-->|"同期"| SYNC <--> NODE2
+
+    style NODE1 fill:#c8e6c9
+    style NODE2 fill:#c8e6c9
+    style SYNC fill:#fff3e0
+```
+
+**特徴:**
+- 両方がトラフィックを処理
+- 負荷分散効果あり
+- リソース効率が高い
+
+---
+
+## 冗長化技術の比較表
+
+| レイヤー | 技術 | 切替時間 | 構成 |
+|:---|:---|:---|:---|
+| L1 | 冗長電源 | なし | Active-Active |
+| L2 | STP | 30〜50秒 | Active-Standby |
+| L2 | RSTP | 数秒以内 | Active-Standby |
+| L2 | LACP | 即時 | Active-Active |
+| L2 | MC-LAG | 即時 | Active-Active |
+| L3 | VRRP/HSRP | 3秒程度 | Active-Standby |
+| L3 | ECMP | 即時 | Active-Active |
+| L4-7 | LB | 設定依存 | どちらも可 |
+
+---
+
+## 試験対策のポイント
+
+```mermaid
+mindmap
+  root((冗長化技術<br/>の要点))
+    L2の冗長化
+      STP/RSTP
+        ループ防止
+        収束時間の違い
+      LACP
+        帯域幅増加
+        耐障害性
+    L3の冗長化
+      VRRP/HSRP
+        仮想IPアドレス
+        マスター選出
+      動的ルーティング
+        経路の自動切替
+    設計ポイント
+      SPOFの排除
+      収束時間
+      構成パターン
+```
+
+1. **各技術の動作原理を理解する**
+   - STPのポート状態遷移
+   - VRRPのマスター選出方法
+
+2. **収束時間を把握する**
+   - STP: 30〜50秒 → RSTP: 数秒
+   - VRRP: アドバタイズ間隔 × 3
+
+3. **構成パターンの使い分け**
+   - Active-Standby: シンプル、確実
+   - Active-Active: 高効率、複雑
+
+4. **レイヤーごとの技術選択**
+   - 冗長化は複数レイヤーで組み合わせる
+   - 単一レイヤーだけでは不十分
