@@ -7,10 +7,11 @@ title: OSI参照モデルとTCP/IPモデルの違い
 ## 全体像：2つのモデルの位置づけ
 
 ```mermaid
-graph LR
+graph TB
     subgraph 理論モデル
         OSI[OSI参照モデル<br/>7層構造]
     end
+
     subgraph 実装モデル
         TCPIP[TCP/IPモデル<br/>4層構造]
     end
@@ -19,6 +20,11 @@ graph LR
     TCPIP -->|実際に動作| インターネット[現在の<br/>インターネット]
 
     標準化 -.->|影響| インターネット
+
+    style OSI fill:#e3f2fd
+    style TCPIP fill:#e8f5e9
+    style 標準化 fill:#fff3e0
+    style インターネット fill:#fce4ec
 ```
 
 - **OSI参照モデル**: ISO（国際標準化機構）が策定した理論的な参照モデル
@@ -94,43 +100,47 @@ graph TB
 ## 両モデルの対応関係
 
 ```mermaid
-graph LR
-    subgraph OSI参照モデル
-        O7[アプリケーション層]
-        O6[プレゼンテーション層]
-        O5[セッション層]
-        O4[トランスポート層]
-        O3[ネットワーク層]
-        O2[データリンク層]
-        O1[物理層]
+graph TB
+    subgraph app["アプリケーション層グループ"]
+        direction TB
+        O7["OSI 7層<br/>アプリケーション層"]
+        O6["OSI 6層<br/>プレゼンテーション層"]
+        O5["OSI 5層<br/>セッション層"]
+        T4["TCP/IP<br/>アプリケーション層"]
     end
 
-    subgraph TCP/IPモデル
-        T4[アプリケーション層]
-        T3[トランスポート層]
-        T2[インターネット層]
-        T1[ネットワーク<br/>インターフェース層]
+    subgraph trans["トランスポート層グループ"]
+        direction TB
+        O4["OSI 4層<br/>トランスポート層"]
+        T3["TCP/IP<br/>トランスポート層"]
     end
 
-    O7 --- T4
-    O6 --- T4
-    O5 --- T4
-    O4 --- T3
-    O3 --- T2
-    O2 --- T1
-    O1 --- T1
+    subgraph net["ネットワーク層グループ"]
+        direction TB
+        O3["OSI 3層<br/>ネットワーク層"]
+        T2["TCP/IP<br/>インターネット層"]
+    end
+
+    subgraph phys["物理層グループ"]
+        direction TB
+        O2["OSI 2層<br/>データリンク層"]
+        O1["OSI 1層<br/>物理層"]
+        T1["TCP/IP<br/>ネットワークIF層"]
+    end
+
+    app --> trans --> net --> phys
 
     style O7 fill:#e1f5fe
     style O6 fill:#e1f5fe
     style O5 fill:#e1f5fe
-    style T4 fill:#e1f5fe
+    style T4 fill:#bbdefb
     style O4 fill:#fff3e0
-    style T3 fill:#fff3e0
+    style T3 fill:#ffe0b2
     style O3 fill:#e8f5e9
-    style T2 fill:#e8f5e9
+    style T2 fill:#c8e6c9
     style O2 fill:#f3e5f5
     style O1 fill:#f3e5f5
-    style T1 fill:#f3e5f5
+    style T1 fill:#e1bee7
 ```
 
 ### 対応のポイント
@@ -171,16 +181,16 @@ graph TB
 ```
 
 ```mermaid
-graph LR
-    subgraph フレーム構造
-        EH[Ethernet<br/>ヘッダ]
-        IH[IP<br/>ヘッダ]
-        TH[TCP<br/>ヘッダ]
-        DATA[データ]
-        FCS[FCS]
+graph TB
+    subgraph frame["フレーム構造（上から順に付加）"]
+        EH["Ethernetヘッダ<br/>（MACアドレス）"]
+        IH["IPヘッダ<br/>（IPアドレス）"]
+        TH["TCPヘッダ<br/>（ポート番号）"]
+        DATA["データ<br/>（ペイロード）"]
+        FCS["FCS<br/>（誤り検出）"]
     end
 
-    EH --- IH --- TH --- DATA --- FCS
+    EH --> IH --> TH --> DATA --> FCS
 
     style EH fill:#f3e5f5
     style IH fill:#e8f5e9
@@ -233,40 +243,36 @@ sequenceDiagram
 
 ```mermaid
 graph TB
-    subgraph 比較項目
-        C1[策定組織]
-        C2[層の数]
-        C3[目的]
-        C4[実用性]
-        C5[柔軟性]
+    subgraph org["策定組織"]
+        O1["OSI: ISO<br/>（国際標準化機構）"]
+        T1["TCP/IP: DARPA→IETF"]
     end
 
-    subgraph OSI参照モデル
-        O1[ISO]
-        O2[7層]
-        O3[理論・教育・標準化]
-        O4[実装が少ない]
-        O5[厳密な層の分離]
+    subgraph layers["層の数"]
+        O2["OSI: 7層"]
+        T2["TCP/IP: 4層"]
     end
 
-    subgraph TCP/IPモデル
-        T1[DARPA/IETF]
-        T2[4層]
-        T3[実用・実装]
-        T4[インターネットの基盤]
-        T5[実装優先の柔軟さ]
+    subgraph purpose["目的"]
+        O3["OSI: 理論・教育<br/>標準化"]
+        T3["TCP/IP: 実用<br/>実装"]
     end
 
-    C1 --- O1
-    C1 --- T1
-    C2 --- O2
-    C2 --- T2
-    C3 --- O3
-    C3 --- T3
-    C4 --- O4
-    C4 --- T4
-    C5 --- O5
-    C5 --- T5
+    subgraph usage["実用性"]
+        O4["OSI: 実装が少ない"]
+        T4["TCP/IP: インターネット<br/>の基盤"]
+    end
+
+    org --> layers --> purpose --> usage
+
+    style O1 fill:#e3f2fd
+    style O2 fill:#e3f2fd
+    style O3 fill:#e3f2fd
+    style O4 fill:#e3f2fd
+    style T1 fill:#e8f5e9
+    style T2 fill:#e8f5e9
+    style T3 fill:#e8f5e9
+    style T4 fill:#e8f5e9
 ```
 
 | 比較項目 | OSI参照モデル | TCP/IPモデル |
