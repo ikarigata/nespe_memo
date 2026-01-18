@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, type ReactNode } from 'react';
 
-const Quiz = ({ answer, children }) => {
+interface QuizProps {
+  answer: ReactNode;
+  children: ReactNode;
+}
+
+const Quiz = ({ answer, children }: QuizProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
