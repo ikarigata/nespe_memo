@@ -31,7 +31,7 @@ const Controls = () => {
   );
 };
 
-export const MermaidBox = ({ children }) => {
+export const MermaidBox = ({ children }: { children: React.ReactNode }) => {
   return (
     <div style={{ border: '1px solid #555', borderRadius: '0.5rem', overflow: 'hidden', height: '500px', position: 'relative' }}>
       <TransformWrapper

@@ -1,0 +1,183 @@
+
+> site@0.0.1 dev
+> astro dev --host
+
+16:57:49 [astro-mermaid] Setting up Mermaid integration
+16:57:49 [astro-mermaid] Existing rehype plugins:
+16:57:49 [astro-mermaid] Skipping ELK support
+16:57:49 [types] Generated 1ms
+16:57:50 [content] Syncing content
+16:57:50 [astro-mermaid] Remark transformed mermaid block #1 in /app/site/src/content/docs/knowledges/dns-fundamentals.md
+16:57:50 [astro-mermaid] Remark transformed mermaid block #2 in /app/site/src/content/docs/knowledges/dns-fundamentals.md
+16:57:50 [astro-mermaid] Remark transformed mermaid block #3 in /app/site/src/content/docs/knowledges/dns-fundamentals.md
+16:57:50 [astro-mermaid] Remark transformed mermaid block #4 in /app/site/src/content/docs/knowledges/dns-fundamentals.md
+16:57:50 [astro-mermaid] Remark transformed mermaid block #5 in /app/site/src/content/docs/knowledges/dns-fundamentals.md
+16:57:50 [astro-mermaid] Remark transformed mermaid block #6 in /app/site/src/content/docs/knowledges/dns-fundamentals.md
+16:57:50 [astro-mermaid] Remark transformed mermaid block #7 in /app/site/src/content/docs/knowledges/dns-fundamentals.md
+16:57:50 [astro-mermaid] Remark transformed mermaid block #8 in /app/site/src/content/docs/knowledges/dns-fundamentals.md
+16:57:50 [astro-mermaid] Remark transformed mermaid block #9 in /app/site/src/content/docs/knowledges/dns-fundamentals.md
+16:57:50 [astro-mermaid] Remark transformed mermaid block #10 in /app/site/src/content/docs/knowledges/dns-fundamentals.md
+16:57:50 [astro-mermaid] Remark transformed mermaid block #11 in /app/site/src/content/docs/knowledges/dns-fundamentals.md
+16:57:50 [astro-mermaid] Remark transformed mermaid block #12 in /app/site/src/content/docs/knowledges/dns-fundamentals.md
+16:57:50 [astro-mermaid] Remark transformed mermaid block #13 in /app/site/src/content/docs/knowledges/dns-fundamentals.md
+16:57:50 [astro-mermaid] Remark transformed mermaid block #14 in /app/site/src/content/docs/knowledges/dns-fundamentals.md
+16:57:50 [astro-mermaid] Remark transformed mermaid block #15 in /app/site/src/content/docs/knowledges/dns-fundamentals.md
+16:57:50 [astro-mermaid] Remark transformed mermaid block #16 in /app/site/src/content/docs/knowledges/dns-fundamentals.md
+16:57:50 [astro-mermaid] Remark transformed mermaid block #17 in /app/site/src/content/docs/knowledges/dns-fundamentals.md
+16:57:50 [astro-mermaid] Remark total mermaid blocks transformed: 17
+16:57:51 [astro-mermaid] Remark transformed mermaid block #1 in /app/site/src/content/docs/knowledges/email-authentication.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #2 in /app/site/src/content/docs/knowledges/email-authentication.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #3 in /app/site/src/content/docs/knowledges/email-authentication.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #4 in /app/site/src/content/docs/knowledges/email-authentication.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #5 in /app/site/src/content/docs/knowledges/email-authentication.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #6 in /app/site/src/content/docs/knowledges/email-authentication.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #7 in /app/site/src/content/docs/knowledges/email-authentication.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #8 in /app/site/src/content/docs/knowledges/email-authentication.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #9 in /app/site/src/content/docs/knowledges/email-authentication.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #10 in /app/site/src/content/docs/knowledges/email-authentication.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #11 in /app/site/src/content/docs/knowledges/email-authentication.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #12 in /app/site/src/content/docs/knowledges/email-authentication.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #13 in /app/site/src/content/docs/knowledges/email-authentication.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #14 in /app/site/src/content/docs/knowledges/email-authentication.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #15 in /app/site/src/content/docs/knowledges/email-authentication.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #16 in /app/site/src/content/docs/knowledges/email-authentication.md
+16:57:51 [astro-mermaid] Remark total mermaid blocks transformed: 16
+16:57:51 [astro-mermaid] Remark transformed mermaid block #1 in /app/site/src/content/docs/knowledges/example.md
+16:57:51 [astro-mermaid] Remark total mermaid blocks transformed: 1
+16:57:51 [astro-mermaid] Remark transformed mermaid block #1 in /app/site/src/content/docs/knowledges/load-balancer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #2 in /app/site/src/content/docs/knowledges/load-balancer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #3 in /app/site/src/content/docs/knowledges/load-balancer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #4 in /app/site/src/content/docs/knowledges/load-balancer.md
+16:57:51 [astro-mermaid] Remark total mermaid blocks transformed: 4
+16:57:51 [astro-mermaid] Remark transformed mermaid block #1 in /app/site/src/content/docs/knowledges/network-monitoring.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #2 in /app/site/src/content/docs/knowledges/network-monitoring.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #3 in /app/site/src/content/docs/knowledges/network-monitoring.md
+16:57:51 [astro-mermaid] Remark total mermaid blocks transformed: 3
+16:57:51 [astro-mermaid] Remark transformed mermaid block #1 in /app/site/src/content/docs/knowledges/osi-tcpip-comparison.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #2 in /app/site/src/content/docs/knowledges/osi-tcpip-comparison.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #3 in /app/site/src/content/docs/knowledges/osi-tcpip-comparison.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #4 in /app/site/src/content/docs/knowledges/osi-tcpip-comparison.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #5 in /app/site/src/content/docs/knowledges/osi-tcpip-comparison.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #6 in /app/site/src/content/docs/knowledges/osi-tcpip-comparison.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #7 in /app/site/src/content/docs/knowledges/osi-tcpip-comparison.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #8 in /app/site/src/content/docs/knowledges/osi-tcpip-comparison.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #9 in /app/site/src/content/docs/knowledges/osi-tcpip-comparison.md
+16:57:51 [astro-mermaid] Remark total mermaid blocks transformed: 9
+16:57:51 [astro-mermaid] Remark transformed mermaid block #1 in /app/site/src/content/docs/knowledges/redundancy-by-layer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #2 in /app/site/src/content/docs/knowledges/redundancy-by-layer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #3 in /app/site/src/content/docs/knowledges/redundancy-by-layer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #4 in /app/site/src/content/docs/knowledges/redundancy-by-layer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #5 in /app/site/src/content/docs/knowledges/redundancy-by-layer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #6 in /app/site/src/content/docs/knowledges/redundancy-by-layer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #7 in /app/site/src/content/docs/knowledges/redundancy-by-layer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #8 in /app/site/src/content/docs/knowledges/redundancy-by-layer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #9 in /app/site/src/content/docs/knowledges/redundancy-by-layer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #10 in /app/site/src/content/docs/knowledges/redundancy-by-layer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #11 in /app/site/src/content/docs/knowledges/redundancy-by-layer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #12 in /app/site/src/content/docs/knowledges/redundancy-by-layer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #13 in /app/site/src/content/docs/knowledges/redundancy-by-layer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #14 in /app/site/src/content/docs/knowledges/redundancy-by-layer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #15 in /app/site/src/content/docs/knowledges/redundancy-by-layer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #16 in /app/site/src/content/docs/knowledges/redundancy-by-layer.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #17 in /app/site/src/content/docs/knowledges/redundancy-by-layer.md
+16:57:51 [astro-mermaid] Remark total mermaid blocks transformed: 17
+16:57:51 [astro-mermaid] Remark transformed mermaid block #1 in /app/site/src/content/docs/knowledges/routing-protocols.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #2 in /app/site/src/content/docs/knowledges/routing-protocols.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #3 in /app/site/src/content/docs/knowledges/routing-protocols.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #4 in /app/site/src/content/docs/knowledges/routing-protocols.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #5 in /app/site/src/content/docs/knowledges/routing-protocols.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #6 in /app/site/src/content/docs/knowledges/routing-protocols.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #7 in /app/site/src/content/docs/knowledges/routing-protocols.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #8 in /app/site/src/content/docs/knowledges/routing-protocols.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #9 in /app/site/src/content/docs/knowledges/routing-protocols.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #10 in /app/site/src/content/docs/knowledges/routing-protocols.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #11 in /app/site/src/content/docs/knowledges/routing-protocols.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #12 in /app/site/src/content/docs/knowledges/routing-protocols.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #13 in /app/site/src/content/docs/knowledges/routing-protocols.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #14 in /app/site/src/content/docs/knowledges/routing-protocols.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #15 in /app/site/src/content/docs/knowledges/routing-protocols.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #16 in /app/site/src/content/docs/knowledges/routing-protocols.md
+16:57:51 [astro-mermaid] Remark total mermaid blocks transformed: 16
+16:57:51 [astro-mermaid] Remark transformed mermaid block #1 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #2 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #3 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #4 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #5 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #6 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #7 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #8 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #9 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #10 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #11 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #12 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #13 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #14 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #15 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #16 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #17 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #18 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark transformed mermaid block #19 in /app/site/src/content/docs/knowledges/sdn-nfv.md
+16:57:51 [astro-mermaid] Remark total mermaid blocks transformed: 19
+16:57:52 [astro-mermaid] Remark transformed mermaid block #1 in /app/site/src/content/docs/knowledges/vpn-technologies.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #2 in /app/site/src/content/docs/knowledges/vpn-technologies.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #3 in /app/site/src/content/docs/knowledges/vpn-technologies.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #4 in /app/site/src/content/docs/knowledges/vpn-technologies.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #5 in /app/site/src/content/docs/knowledges/vpn-technologies.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #6 in /app/site/src/content/docs/knowledges/vpn-technologies.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #7 in /app/site/src/content/docs/knowledges/vpn-technologies.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #8 in /app/site/src/content/docs/knowledges/vpn-technologies.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #9 in /app/site/src/content/docs/knowledges/vpn-technologies.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #10 in /app/site/src/content/docs/knowledges/vpn-technologies.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #11 in /app/site/src/content/docs/knowledges/vpn-technologies.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #12 in /app/site/src/content/docs/knowledges/vpn-technologies.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #13 in /app/site/src/content/docs/knowledges/vpn-technologies.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #14 in /app/site/src/content/docs/knowledges/vpn-technologies.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #15 in /app/site/src/content/docs/knowledges/vpn-technologies.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #16 in /app/site/src/content/docs/knowledges/vpn-technologies.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #17 in /app/site/src/content/docs/knowledges/vpn-technologies.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #18 in /app/site/src/content/docs/knowledges/vpn-technologies.md
+16:57:52 [astro-mermaid] Remark total mermaid blocks transformed: 18
+16:57:52 [astro-mermaid] Remark transformed mermaid block #1 in /app/site/src/content/docs/knowledges/web-protocols-evolution.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #2 in /app/site/src/content/docs/knowledges/web-protocols-evolution.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #3 in /app/site/src/content/docs/knowledges/web-protocols-evolution.md
+16:57:52 [astro-mermaid] Remark total mermaid blocks transformed: 3
+16:57:52 [astro-mermaid] Remark transformed mermaid block #1 in /app/site/src/content/docs/knowledges/wireless-lan-security.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #2 in /app/site/src/content/docs/knowledges/wireless-lan-security.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #3 in /app/site/src/content/docs/knowledges/wireless-lan-security.md
+16:57:52 [astro-mermaid] Remark total mermaid blocks transformed: 3
+16:57:52 [astro-mermaid] Remark transformed mermaid block #1 in /app/site/src/content/docs/knowledges/vlan-network-separation.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #2 in /app/site/src/content/docs/knowledges/vlan-network-separation.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #3 in /app/site/src/content/docs/knowledges/vlan-network-separation.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #4 in /app/site/src/content/docs/knowledges/vlan-network-separation.md
+16:57:52 [astro-mermaid] Remark transformed mermaid block #5 in /app/site/src/content/docs/knowledges/vlan-network-separation.md
+16:57:52 [astro-mermaid] Remark total mermaid blocks transformed: 5
+16:57:52 [content] Synced content
+16:57:52 [vite] Re-optimizing dependencies because vite config has changed
+
+ astro  v5.16.11 ready in 5767 ms
+
+┃ Local    http://localhost:4321/
+┃ Network  http://192.168.0.2:4321/
+
+16:57:52 watching for file changes...
+16:58:43 [astro-mermaid] Remark transformed mermaid block #1 in /app/site/src/content/docs/skills/3-month-roadmap.mdx
+16:58:43 [astro-mermaid] Remark total mermaid blocks transformed: 1
+16:58:43 [200] /skills/3-month-roadmap 462ms
+17:00:16 Configuration file updated. Restarting...
+17:00:17 [astro-mermaid] Setting up Mermaid integration
+17:00:17 [astro-mermaid] Existing rehype plugins:
+17:00:17 [astro-mermaid] Skipping ELK support
+17:00:17 [vite] Re-optimizing dependencies because lockfile has changed
+17:00:19 [content] Syncing content
+17:00:20 [content] Synced content
+17:00:20 [types] Generated 2.94s
+17:00:20 [vite] Re-optimizing dependencies because vite config has changed
+17:00:21 Configuration file updated. Restarting...
+17:00:22 [astro-mermaid] Setting up Mermaid integration
+17:00:22 [astro-mermaid] Existing rehype plugins:
+17:00:22 [astro-mermaid] Skipping ELK support
+17:00:23 [vite] Re-optimizing dependencies because lockfile has changed
+17:00:25 [content] Syncing content
+17:00:25 [content] Synced content
+17:00:25 [types] Generated 2.13s
+17:00:25 [vite] Re-optimizing dependencies because vite config has changed
