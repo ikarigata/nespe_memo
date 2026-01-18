@@ -1,0 +1,555 @@
+---
+title: メール認証技術（SPF・DKIM・DMARC）
+---
+
+なりすましメール対策として、送信ドメイン認証技術が広く使われています。この記事では、SPF・DKIM・DMARCの仕組みと設定方法を整理します。
+
+## メール認証の全体像
+
+```mermaid
+graph TB
+    subgraph overview["送信ドメイン認証技術"]
+        SPF["SPF<br/>送信元IPの検証"]
+        DKIM["DKIM<br/>電子署名による検証"]
+        DMARC["DMARC<br/>SPF/DKIMの統合ポリシー"]
+    end
+
+    SPF --> RESULT1["送信サーバーが<br/>正規かどうか"]
+    DKIM --> RESULT2["メールが<br/>改ざんされていないか"]
+    DMARC --> RESULT3["認証失敗時の<br/>処理を指定"]
+
+    style SPF fill:#e3f2fd
+    style DKIM fill:#c8e6c9
+    style DMARC fill:#fff3e0
+```
+
+---
+
+## なりすましメールの仕組み
+
+```mermaid
+graph TB
+    subgraph spoofing["なりすましの問題"]
+        ATTACKER["攻撃者"]
+        VICTIM["受信者"]
+
+        subgraph envelope["エンベロープ"]
+            ENV_FROM["MAIL FROM:<br/>attacker@evil.com"]
+        end
+
+        subgraph header["メールヘッダ"]
+            HDR_FROM["From:<br/>ceo@example.com<br/>（偽装）"]
+        end
+    end
+
+    ATTACKER -->|"偽装メール送信"| VICTIM
+    VICTIM -->|"CEOからだと<br/>思い込む"| PHISHING["フィッシング被害"]
+
+    style ATTACKER fill:#ffcdd2
+    style HDR_FROM fill:#ffcdd2
+    style PHISHING fill:#ffcdd2
+```
+
+**2つの「From」アドレス:**
+- **エンベロープFrom（MAIL FROM）**: 実際の送信経路で使用
+- **ヘッダFrom**: 受信者に表示されるアドレス
+
+→ この2つが異なることでなりすましが可能
+
+---
+
+## SPF（Sender Policy Framework）
+
+### SPFの仕組み
+
+```mermaid
+sequenceDiagram
+    participant Sender as 送信サーバー
+    participant Receiver as 受信サーバー
+    participant DNS as DNS
+
+    Sender->>Receiver: メール送信<br/>MAIL FROM: user@example.com
+
+    Note over Receiver: SPF検証開始
+    Receiver->>DNS: example.comの<br/>TXTレコード要求
+    DNS-->>Receiver: v=spf1 ip4:192.0.2.0/24 -all
+
+    Note over Receiver: 送信元IPと照合
+    alt IPが一致
+        Receiver->>Receiver: SPF Pass
+    else IPが不一致
+        Receiver->>Receiver: SPF Fail
+    end
+```
+
+```mermaid
+graph TB
+    subgraph spf_flow["SPF検証の流れ"]
+        MAIL["メール受信"]
+        EXTRACT["エンベロープFromの<br/>ドメイン抽出"]
+        QUERY["DNSにSPFレコード<br/>を問い合わせ"]
+        CHECK["送信元IPと<br/>SPFレコードを照合"]
+        RESULT["認証結果"]
+    end
+
+    MAIL --> EXTRACT --> QUERY --> CHECK --> RESULT
+
+    style MAIL fill:#e3f2fd
+    style QUERY fill:#c8e6c9
+    style CHECK fill:#fff3e0
+    style RESULT fill:#f3e5f5
+```
+
+### SPFレコードの構文
+
+```
+v=spf1 ip4:192.0.2.0/24 include:_spf.google.com mx -all
+```
+
+| 要素 | 説明 |
+|:---|:---|
+| `v=spf1` | SPFバージョン（必須） |
+| `ip4:` | 許可するIPv4アドレス/範囲 |
+| `ip6:` | 許可するIPv6アドレス/範囲 |
+| `include:` | 他ドメインのSPFを参照 |
+| `mx` | MXレコードのIPを許可 |
+| `a` | Aレコードのホストを許可 |
+| `-all` | それ以外は拒否（Fail） |
+| `~all` | それ以外はソフトフェイル |
+| `?all` | 結果を返さない（Neutral） |
+
+### SPFの限定子
+
+```mermaid
+graph TB
+    subgraph qualifiers["限定子（Qualifier）"]
+        PASS["+ Pass<br/>（デフォルト）<br/>認証成功"]
+        FAIL["- Fail<br/>認証失敗<br/>拒否推奨"]
+        SOFTFAIL["~ SoftFail<br/>疑わしい<br/>マークして通過"]
+        NEUTRAL["? Neutral<br/>判定しない"]
+    end
+
+    style PASS fill:#c8e6c9
+    style FAIL fill:#ffcdd2
+    style SOFTFAIL fill:#fff3e0
+    style NEUTRAL fill:#e3f2fd
+```
+
+### SPFの認証結果
+
+| 結果 | 意味 |
+|:---|:---|
+| Pass | 送信元は許可されている |
+| Fail | 送信元は許可されていない |
+| SoftFail | 許可されていないが、厳密には判定しない |
+| Neutral | SPFで判定しない |
+| None | SPFレコードがない |
+| TempError | 一時的なエラー |
+| PermError | SPFレコードの構文エラー |
+
+---
+
+## DKIM（DomainKeys Identified Mail）
+
+### DKIMの仕組み
+
+```mermaid
+sequenceDiagram
+    participant Sender as 送信サーバー
+    participant Receiver as 受信サーバー
+    participant DNS as DNS
+
+    Note over Sender: 秘密鍵で署名
+    Sender->>Receiver: メール送信<br/>（DKIM-Signatureヘッダ付き）
+
+    Note over Receiver: DKIM検証開始
+    Receiver->>DNS: セレクタ._domainkey.example.com<br/>のTXTレコード要求
+    DNS-->>Receiver: v=DKIM1; p=公開鍵...
+
+    Note over Receiver: 公開鍵で署名を検証
+    alt 署名が有効
+        Receiver->>Receiver: DKIM Pass
+    else 署名が無効
+        Receiver->>Receiver: DKIM Fail
+    end
+```
+
+```mermaid
+graph TB
+    subgraph dkim_process["DKIMの処理"]
+        subgraph sender_side["送信側"]
+            S1["メール本文と<br/>ヘッダを正規化"]
+            S2["ハッシュ値を計算"]
+            S3["秘密鍵で署名"]
+            S4["DKIM-Signature<br/>ヘッダを付加"]
+        end
+
+        subgraph receiver_side["受信側"]
+            R1["DKIM-Signature<br/>を解析"]
+            R2["DNSから<br/>公開鍵を取得"]
+            R3["署名を検証"]
+            R4["認証結果を判定"]
+        end
+    end
+
+    S1 --> S2 --> S3 --> S4
+    S4 --> R1
+    R1 --> R2 --> R3 --> R4
+
+    style S1 fill:#e3f2fd
+    style S2 fill:#e3f2fd
+    style S3 fill:#e3f2fd
+    style S4 fill:#e3f2fd
+    style R1 fill:#c8e6c9
+    style R2 fill:#c8e6c9
+    style R3 fill:#c8e6c9
+    style R4 fill:#c8e6c9
+```
+
+### DKIM-Signatureヘッダ
+
+```
+DKIM-Signature: v=1; a=rsa-sha256; d=example.com;
+    s=selector1; c=relaxed/relaxed;
+    h=from:to:subject:date;
+    bh=base64ボディハッシュ;
+    b=base64署名データ
+```
+
+| タグ | 説明 |
+|:---|:---|
+| `v` | バージョン（必ず1） |
+| `a` | 署名アルゴリズム（rsa-sha256等） |
+| `d` | 署名ドメイン |
+| `s` | セレクタ（鍵の識別子） |
+| `c` | 正規化方式 |
+| `h` | 署名対象のヘッダ |
+| `bh` | 本文のハッシュ値 |
+| `b` | 署名データ |
+
+### DKIMの公開鍵レコード
+
+```
+selector1._domainkey.example.com IN TXT "v=DKIM1; k=rsa; p=公開鍵..."
+```
+
+| タグ | 説明 |
+|:---|:---|
+| `v` | バージョン（DKIM1） |
+| `k` | 鍵の種類（rsa等） |
+| `p` | 公開鍵（Base64） |
+
+---
+
+## DMARC（Domain-based Message Authentication, Reporting & Conformance）
+
+### DMARCの役割
+
+```mermaid
+graph TB
+    subgraph dmarc_role["DMARCの役割"]
+        SPF_RESULT["SPF結果"]
+        DKIM_RESULT["DKIM結果"]
+        DMARC["DMARC<br/>ポリシー"]
+        ACTION["処理決定"]
+        REPORT["レポート送信"]
+    end
+
+    SPF_RESULT --> DMARC
+    DKIM_RESULT --> DMARC
+    DMARC --> ACTION
+    DMARC --> REPORT
+
+    style SPF_RESULT fill:#e3f2fd
+    style DKIM_RESULT fill:#c8e6c9
+    style DMARC fill:#fff3e0
+    style ACTION fill:#ffcdd2
+    style REPORT fill:#f3e5f5
+```
+
+### DMARCの認証フロー
+
+```mermaid
+sequenceDiagram
+    participant Receiver as 受信サーバー
+    participant DNS as DNS
+
+    Note over Receiver: SPF/DKIM検証後
+
+    Receiver->>DNS: _dmarc.example.com<br/>のTXTレコード要求
+    DNS-->>Receiver: v=DMARC1; p=reject; ...
+
+    Note over Receiver: アライメント検証
+    alt SPFまたはDKIMがPassかつアライメント一致
+        Receiver->>Receiver: DMARC Pass
+    else
+        Receiver->>Receiver: DMARC Fail
+        Note over Receiver: ポリシーに従い処理
+    end
+
+    Note over Receiver: レポート生成・送信
+```
+
+### アライメント（Alignment）
+
+```mermaid
+graph TB
+    subgraph alignment["アライメントの概念"]
+        subgraph spf_align["SPFアライメント"]
+            ENV_FROM["エンベロープFrom<br/>user@mail.example.com"]
+            HDR_FROM1["ヘッダFrom<br/>user@example.com"]
+            SPF_CHECK["ドメインが一致?"]
+        end
+
+        subgraph dkim_align["DKIMアライメント"]
+            DKIM_D["DKIM d=<br/>example.com"]
+            HDR_FROM2["ヘッダFrom<br/>user@example.com"]
+            DKIM_CHECK["ドメインが一致?"]
+        end
+    end
+
+    ENV_FROM --> SPF_CHECK
+    HDR_FROM1 --> SPF_CHECK
+    DKIM_D --> DKIM_CHECK
+    HDR_FROM2 --> DKIM_CHECK
+
+    style ENV_FROM fill:#e3f2fd
+    style HDR_FROM1 fill:#fff3e0
+    style DKIM_D fill:#c8e6c9
+    style HDR_FROM2 fill:#fff3e0
+```
+
+**アライメントモード:**
+- **strict（厳密）**: 完全一致が必要
+- **relaxed（緩和）**: 組織ドメインが一致すればOK
+
+### DMARCレコードの構文
+
+```
+_dmarc.example.com IN TXT "v=DMARC1; p=reject; rua=mailto:dmarc@example.com; pct=100"
+```
+
+| タグ | 説明 | 値の例 |
+|:---|:---|:---|
+| `v` | バージョン（必須） | DMARC1 |
+| `p` | ポリシー（必須） | none, quarantine, reject |
+| `sp` | サブドメインポリシー | none, quarantine, reject |
+| `rua` | 集約レポート送信先 | mailto:dmarc@example.com |
+| `ruf` | 失敗レポート送信先 | mailto:forensic@example.com |
+| `pct` | ポリシー適用割合 | 0-100 |
+| `adkim` | DKIMアライメントモード | r（relaxed）, s（strict） |
+| `aspf` | SPFアライメントモード | r（relaxed）, s（strict） |
+
+### DMARCポリシー
+
+```mermaid
+graph TB
+    subgraph policies["DMARCポリシー"]
+        NONE["p=none<br/>監視のみ<br/>何もしない"]
+        QUARANTINE["p=quarantine<br/>隔離<br/>迷惑メールへ"]
+        REJECT["p=reject<br/>拒否<br/>受信しない"]
+    end
+
+    NONE -->|"段階的に"| QUARANTINE
+    QUARANTINE -->|"移行"| REJECT
+
+    style NONE fill:#c8e6c9
+    style QUARANTINE fill:#fff3e0
+    style REJECT fill:#ffcdd2
+```
+
+| ポリシー | 動作 | 導入段階 |
+|:---|:---|:---|
+| none | 何もしない（レポートのみ） | 初期導入時 |
+| quarantine | 迷惑メールフォルダへ | 検証後 |
+| reject | 受信拒否 | 完全運用時 |
+
+---
+
+## 3つの認証技術の関係
+
+```mermaid
+graph TB
+    subgraph relationship["SPF・DKIM・DMARCの関係"]
+        MAIL["メール受信"]
+
+        subgraph checks["認証チェック"]
+            SPF["SPF検証<br/>送信元IP"]
+            DKIM["DKIM検証<br/>電子署名"]
+        end
+
+        DMARC["DMARC検証<br/>アライメント確認"]
+
+        subgraph results["処理結果"]
+            PASS["認証成功<br/>→ 受信"]
+            FAIL["認証失敗<br/>→ ポリシー適用"]
+        end
+    end
+
+    MAIL --> SPF
+    MAIL --> DKIM
+    SPF --> DMARC
+    DKIM --> DMARC
+    DMARC --> PASS
+    DMARC --> FAIL
+
+    style MAIL fill:#e3f2fd
+    style SPF fill:#c8e6c9
+    style DKIM fill:#c8e6c9
+    style DMARC fill:#fff3e0
+    style PASS fill:#c8e6c9
+    style FAIL fill:#ffcdd2
+```
+
+| 認証技術 | 検証対象 | 保護内容 |
+|:---|:---|:---|
+| SPF | エンベロープFromのドメイン | 送信サーバーの詐称防止 |
+| DKIM | メールの署名 | 改ざん検知、ドメイン認証 |
+| DMARC | ヘッダFromとの整合性 | なりすまし防止、ポリシー統一 |
+
+---
+
+## ARC（Authenticated Received Chain）
+
+メール転送時に認証情報を維持する仕組みです。
+
+### 転送による認証失敗の問題
+
+```mermaid
+graph TB
+    subgraph problem["転送時の問題"]
+        SENDER["送信者<br/>user@example.com"]
+        FORWARDER["転送サーバー<br/>forward@relay.com"]
+        RECEIVER["最終受信者"]
+
+        SENDER -->|"SPF Pass<br/>DKIM Pass"| FORWARDER
+        FORWARDER -->|"SPF Fail<br/>（IPが変わる）<br/>DKIM Fail<br/>（本文変更の可能性）"| RECEIVER
+    end
+
+    style SENDER fill:#c8e6c9
+    style FORWARDER fill:#fff3e0
+    style RECEIVER fill:#ffcdd2
+```
+
+### ARCの仕組み
+
+```mermaid
+graph TB
+    subgraph arc["ARCヘッダ"]
+        AAR["ARC-Authentication-Results<br/>認証結果の記録"]
+        AMS["ARC-Message-Signature<br/>メッセージの署名"]
+        AS["ARC-Seal<br/>チェーンの封印"]
+    end
+
+    subgraph chain["チェーンの形成"]
+        HOP1["i=1<br/>最初の転送"]
+        HOP2["i=2<br/>2番目の転送"]
+        HOP3["i=3<br/>3番目の転送"]
+    end
+
+    AAR --> AMS --> AS
+    HOP1 --> HOP2 --> HOP3
+
+    style AAR fill:#e3f2fd
+    style AMS fill:#c8e6c9
+    style AS fill:#fff3e0
+```
+
+| ヘッダ | 役割 |
+|:---|:---|
+| ARC-Authentication-Results | その時点での認証結果を記録 |
+| ARC-Message-Signature | メッセージ内容の署名 |
+| ARC-Seal | ARCチェーン全体の封印（改ざん防止） |
+
+---
+
+## 設定例まとめ
+
+### DNSレコード設定例
+
+```
+; SPFレコード
+example.com. IN TXT "v=spf1 ip4:192.0.2.0/24 include:_spf.google.com -all"
+
+; DKIM公開鍵
+selector1._domainkey.example.com. IN TXT "v=DKIM1; k=rsa; p=MIIBIjAN..."
+
+; DMARCレコード
+_dmarc.example.com. IN TXT "v=DMARC1; p=quarantine; rua=mailto:dmarc@example.com; pct=100"
+```
+
+---
+
+## 導入のベストプラクティス
+
+```mermaid
+graph TB
+    subgraph steps["段階的な導入"]
+        STEP1["1. SPF設定<br/>送信サーバーIP登録"]
+        STEP2["2. DKIM設定<br/>鍵ペア生成・設定"]
+        STEP3["3. DMARC導入<br/>p=none で監視"]
+        STEP4["4. レポート分析<br/>問題の洗い出し"]
+        STEP5["5. ポリシー強化<br/>p=quarantine → reject"]
+    end
+
+    STEP1 --> STEP2 --> STEP3 --> STEP4 --> STEP5
+
+    style STEP1 fill:#e3f2fd
+    style STEP2 fill:#c8e6c9
+    style STEP3 fill:#fff3e0
+    style STEP4 fill:#f3e5f5
+    style STEP5 fill:#ffcdd2
+```
+
+---
+
+## 試験対策のポイント
+
+```mermaid
+mindmap
+  root((メール認証<br/>の要点))
+    SPF
+      TXTレコード
+      エンベロープFrom検証
+      ip4/include/mx
+      -all/~all
+    DKIM
+      電子署名
+      セレクタ._domainkey
+      DKIM-Signatureヘッダ
+      改ざん検知
+    DMARC
+      ポリシー
+        none
+        quarantine
+        reject
+      アライメント
+        SPFアライメント
+        DKIMアライメント
+      レポート
+        rua/ruf
+    ARC
+      転送時の認証維持
+      ARCヘッダ
+```
+
+1. **各技術の検証対象を理解する**
+   - SPF: エンベロープFrom（MAIL FROM）のドメインとIP
+   - DKIM: メールの電子署名とドメイン
+   - DMARC: ヘッダFromとの整合性（アライメント）
+
+2. **DNSレコードの形式を覚える**
+   - SPF: `v=spf1 ... -all`
+   - DKIM: `selector._domainkey.ドメイン`
+   - DMARC: `_dmarc.ドメイン`
+
+3. **アライメントの概念を把握**
+   - SPF: エンベロープFromドメイン = ヘッダFromドメイン
+   - DKIM: 署名のd=ドメイン = ヘッダFromドメイン
+
+4. **DMARCポリシーの段階**
+   - none → quarantine → reject の順で強化
+
+5. **転送問題とARC**
+   - 転送時にSPF/DKIMが失敗する理由
+   - ARCによる認証チェーンの維持
