@@ -1,10 +1,15 @@
 ---
 title: ルーティングプロトコル（OSPF・BGP）
 ---
+import { MermaidBox } from '../../../components/MermaidBox';
+
 
 動的ルーティングプロトコルは、ネットワークの経路情報を自動的に交換・学習する仕組みです。この記事では、企業ネットワークで頻出のOSPFとBGPを中心に、設計ポイントを整理します。
 
 ## ルーティングプロトコルの分類
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -36,6 +41,9 @@ graph TB
     style BGP fill:#bbdefb
 ```
 
+</MermaidBox>
+
+
 | 種別 | プロトコル | アルゴリズム | 用途 |
 |:---|:---|:---|:---|
 | IGP | RIP | ベルマンフォード | 小規模ネットワーク |
@@ -50,6 +58,9 @@ graph TB
 OSPFはリンクステート型のIGPで、企業ネットワークで最も広く使われています。
 
 ### OSPFの基本動作
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 sequenceDiagram
@@ -70,7 +81,13 @@ sequenceDiagram
     Note over R1,R2: SPF計算・経路決定
 ```
 
+</MermaidBox>
+
+
 ### OSPFの状態遷移
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -98,6 +115,9 @@ graph TB
     style FULL fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 | 状態 | 説明 |
 |:---|:---|
 | Down | 初期状態 |
@@ -111,6 +131,9 @@ graph TB
 ### DR/BDRの選出
 
 マルチアクセスネットワークでは、LSA交換の効率化のためDR（Designated Router）とBDR（Backup DR）を選出します。
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -137,11 +160,17 @@ graph TB
     style OTHER3 fill:#e3f2fd
 ```
 
+</MermaidBox>
+
+
 **DR選出の優先順位:**
 1. プライオリティ値が最大（0は選出対象外）
 2. ルーターIDが最大
 
 ### OSPFエリア設計
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -184,6 +213,9 @@ graph TB
     style R3 fill:#bbdefb
 ```
 
+</MermaidBox>
+
+
 | ルーター種別 | 役割 |
 |:---|:---|
 | 内部ルーター | 1つのエリア内のみに所属 |
@@ -192,6 +224,9 @@ graph TB
 | バックボーンルーター | エリア0に所属 |
 
 ### LSAタイプ
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -219,6 +254,9 @@ graph TB
     style LSA7 fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 | タイプ | 名称 | 生成元 | 伝播範囲 |
 |:---|:---|:---|:---|
 | 1 | ルーターLSA | 全ルーター | エリア内 |
@@ -229,6 +267,9 @@ graph TB
 | 7 | NSSA外部LSA | NSSA内ASBR | NSSA内 |
 
 ### スタブエリアの種類
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -250,6 +291,9 @@ graph TB
     style TNSSA fill:#ffcdd2
 ```
 
+</MermaidBox>
+
+
 ---
 
 ## BGP（Border Gateway Protocol）
@@ -257,6 +301,9 @@ graph TB
 BGPはAS（自律システム）間の経路交換に使用されるEGPです。
 
 ### BGPの基本概念
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -288,6 +335,9 @@ graph TB
     style R5 fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 | 用語 | 説明 |
 |:---|:---|
 | AS | 自律システム。同一管理下のネットワーク群 |
@@ -296,6 +346,9 @@ graph TB
 | AS番号 | ASを識別する番号（2バイトまたは4バイト） |
 
 ### BGPメッセージタイプ
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 sequenceDiagram
@@ -318,6 +371,9 @@ sequenceDiagram
     R1->>R2: NOTIFICATION
 ```
 
+</MermaidBox>
+
+
 | メッセージ | 役割 |
 |:---|:---|
 | OPEN | セッション確立、パラメータ交換 |
@@ -326,6 +382,9 @@ sequenceDiagram
 | NOTIFICATION | エラー通知、セッション切断 |
 
 ### BGPパス属性
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -351,6 +410,9 @@ graph TB
     style COMMUNITY fill:#bbdefb
 ```
 
+</MermaidBox>
+
+
 | 属性 | 種別 | 説明 | 経路選択での優先度 |
 |:---|:---|:---|:---|
 | ORIGIN | 必須 | 経路の起源（i, e, ?） | 7番目 |
@@ -360,6 +422,9 @@ graph TB
 | MED | オプション | 他ASへの優先度指示（小さいほど優先） | 6番目 |
 
 ### BGP経路選択アルゴリズム
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -397,7 +462,13 @@ graph TB
     style BEST fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 ### iBGPのフルメッシュ問題
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -426,7 +497,13 @@ graph TB
     style NOTE fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 ### ルートリフレクタ
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -456,6 +533,9 @@ graph TB
     style NON fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 **ルートリフレクタの動作:**
 - クライアントから受信した経路 → 他のクライアント・非クライアントへ反映
 - 非クライアントから受信した経路 → クライアントへのみ反映
@@ -465,6 +545,9 @@ graph TB
 ## BFD（Bidirectional Forwarding Detection）
 
 障害検知を高速化するプロトコルです。
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -489,6 +572,9 @@ graph TB
     style B2 fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 | 項目 | BFDなし | BFDあり |
 |:---|:---|:---|
 | 検知間隔 | 秒単位 | ミリ秒単位 |
@@ -500,6 +586,9 @@ graph TB
 ## 経路再配布
 
 異なるルーティングプロトコル間で経路情報を交換します。
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -525,6 +614,9 @@ graph TB
     style BGP_R fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 **再配布時の注意点:**
 - ルーティングループの可能性
 - メトリックの変換が必要
@@ -547,6 +639,9 @@ graph TB
 ---
 
 ## 試験対策のポイント
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 mindmap
@@ -576,6 +671,9 @@ mindmap
       BFD
       経路再配布
 ```
+
+</MermaidBox>
+
 
 1. **OSPFの状態遷移を理解する**
    - Down → Init → 2-Way → ExStart → Exchange → Loading → Full

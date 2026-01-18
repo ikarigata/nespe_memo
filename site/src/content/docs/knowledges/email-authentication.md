@@ -1,10 +1,15 @@
 ---
 title: メール認証技術（SPF・DKIM・DMARC）
 ---
+import { MermaidBox } from '../../../components/MermaidBox';
+
 
 なりすましメール対策として、送信ドメイン認証技術が広く使われています。この記事では、SPF・DKIM・DMARCの仕組みと設定方法を整理します。
 
 ## メール認証の全体像
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -23,9 +28,15 @@ graph TB
     style DMARC fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 ---
 
 ## なりすましメールの仕組み
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -50,6 +61,9 @@ graph TB
     style PHISHING fill:#ffcdd2
 ```
 
+</MermaidBox>
+
+
 **2つの「From」アドレス:**
 - **エンベロープFrom（MAIL FROM）**: 実際の送信経路で使用
 - **ヘッダFrom**: 受信者に表示されるアドレス
@@ -61,6 +75,9 @@ graph TB
 ## SPF（Sender Policy Framework）
 
 ### SPFの仕組み
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 sequenceDiagram
@@ -82,6 +99,12 @@ sequenceDiagram
     end
 ```
 
+</MermaidBox>
+
+
+
+<MermaidBox client:visible>
+
 ```mermaid
 graph TB
     subgraph spf_flow["SPF検証の流れ"]
@@ -99,6 +122,9 @@ graph TB
     style CHECK fill:#fff3e0
     style RESULT fill:#f3e5f5
 ```
+
+</MermaidBox>
+
 
 ### SPFレコードの構文
 
@@ -120,6 +146,9 @@ v=spf1 ip4:192.0.2.0/24 include:_spf.google.com mx -all
 
 ### SPFの限定子
 
+
+<MermaidBox client:visible>
+
 ```mermaid
 graph TB
     subgraph qualifiers["限定子（Qualifier）"]
@@ -134,6 +163,9 @@ graph TB
     style SOFTFAIL fill:#fff3e0
     style NEUTRAL fill:#e3f2fd
 ```
+
+</MermaidBox>
+
 
 ### SPFの認証結果
 
@@ -152,6 +184,9 @@ graph TB
 ## DKIM（DomainKeys Identified Mail）
 
 ### DKIMの仕組み
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 sequenceDiagram
@@ -173,6 +208,12 @@ sequenceDiagram
         Receiver->>Receiver: DKIM Fail
     end
 ```
+
+</MermaidBox>
+
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -205,6 +246,9 @@ graph TB
     style R3 fill:#c8e6c9
     style R4 fill:#c8e6c9
 ```
+
+</MermaidBox>
+
 
 ### DKIM-Signatureヘッダ
 
@@ -245,6 +289,9 @@ selector1._domainkey.example.com IN TXT "v=DKIM1; k=rsa; p=公開鍵..."
 
 ### DMARCの役割
 
+
+<MermaidBox client:visible>
+
 ```mermaid
 graph TB
     subgraph dmarc_role["DMARCの役割"]
@@ -267,7 +314,13 @@ graph TB
     style REPORT fill:#f3e5f5
 ```
 
+</MermaidBox>
+
+
 ### DMARCの認証フロー
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 sequenceDiagram
@@ -290,7 +343,13 @@ sequenceDiagram
     Note over Receiver: レポート生成・送信
 ```
 
+</MermaidBox>
+
+
 ### アライメント（Alignment）
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -319,6 +378,9 @@ graph TB
     style HDR_FROM2 fill:#fff3e0
 ```
 
+</MermaidBox>
+
+
 **アライメントモード:**
 - **strict（厳密）**: 完全一致が必要
 - **relaxed（緩和）**: 組織ドメインが一致すればOK
@@ -342,6 +404,9 @@ _dmarc.example.com IN TXT "v=DMARC1; p=reject; rua=mailto:dmarc@example.com; pct
 
 ### DMARCポリシー
 
+
+<MermaidBox client:visible>
+
 ```mermaid
 graph TB
     subgraph policies["DMARCポリシー"]
@@ -358,6 +423,9 @@ graph TB
     style REJECT fill:#ffcdd2
 ```
 
+</MermaidBox>
+
+
 | ポリシー | 動作 | 導入段階 |
 |:---|:---|:---|
 | none | 何もしない（レポートのみ） | 初期導入時 |
@@ -367,6 +435,9 @@ graph TB
 ---
 
 ## 3つの認証技術の関係
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -401,6 +472,9 @@ graph TB
     style FAIL fill:#ffcdd2
 ```
 
+</MermaidBox>
+
+
 | 認証技術 | 検証対象 | 保護内容 |
 |:---|:---|:---|
 | SPF | エンベロープFromのドメイン | 送信サーバーの詐称防止 |
@@ -414,6 +488,9 @@ graph TB
 メール転送時に認証情報を維持する仕組みです。
 
 ### 転送による認証失敗の問題
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -431,7 +508,13 @@ graph TB
     style RECEIVER fill:#ffcdd2
 ```
 
+</MermaidBox>
+
+
 ### ARCの仕組み
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -454,6 +537,9 @@ graph TB
     style AMS fill:#c8e6c9
     style AS fill:#fff3e0
 ```
+
+</MermaidBox>
+
 
 | ヘッダ | 役割 |
 |:---|:---|
@@ -482,6 +568,9 @@ _dmarc.example.com. IN TXT "v=DMARC1; p=quarantine; rua=mailto:dmarc@example.com
 
 ## 導入のベストプラクティス
 
+
+<MermaidBox client:visible>
+
 ```mermaid
 graph TB
     subgraph steps["段階的な導入"]
@@ -501,9 +590,15 @@ graph TB
     style STEP5 fill:#ffcdd2
 ```
 
+</MermaidBox>
+
+
 ---
 
 ## 試験対策のポイント
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 mindmap
@@ -532,6 +627,9 @@ mindmap
       転送時の認証維持
       ARCヘッダ
 ```
+
+</MermaidBox>
+
 
 1. **各技術の検証対象を理解する**
    - SPF: エンベロープFrom（MAIL FROM）のドメインとIP
