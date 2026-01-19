@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { TransformWrapper, TransformComponent, useControls } from 'react-zoom-pan-pinch';
-
-const wheelConfig = { step: 0.1 };
+import type { ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
 
 const Controls = () => {
   const { resetTransform } = useControls();
@@ -34,17 +33,73 @@ const Controls = () => {
 };
 
 export const MermaidBox = ({ children }: { children: React.ReactNode }) => {
+  const transformRef = useRef<ReactZoomPanPinchRef>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [initialScale, setInitialScale] = useState(1);
+
+  useEffect(() => {
+    const fitToContainer = () => {
+      if (!containerRef.current || !contentRef.current) return;
+
+      const container = containerRef.current;
+      const content = contentRef.current.querySelector('pre, svg, .mermaid');
+
+      if (!content) return;
+
+      const containerWidth = container.clientWidth;
+      const containerHeight = container.clientHeight;
+      const contentWidth = content.scrollWidth || content.clientWidth;
+      const contentHeight = content.scrollHeight || content.clientHeight;
+
+      if (contentWidth === 0 || contentHeight === 0) return;
+
+      const padding = 40;
+      const scaleX = (containerWidth - padding) / contentWidth;
+      const scaleY = (containerHeight - padding) / contentHeight;
+      const scale = Math.min(scaleX, scaleY, 2);
+
+      if (scale > 0 && scale !== Infinity) {
+        setInitialScale(scale);
+        if (transformRef.current) {
+          transformRef.current.centerView(scale);
+        }
+      }
+    };
+
+    const timer = setTimeout(fitToContainer, 100);
+    const observer = new MutationObserver(() => {
+      setTimeout(fitToContainer, 50);
+    });
+
+    if (contentRef.current) {
+      observer.observe(contentRef.current, { childList: true, subtree: true });
+    }
+
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, []);
+
   return (
-    <div style={{ border: '1px solid #555', borderRadius: '0.5rem', overflow: 'hidden', height: '500px', position: 'relative' }}>
+    <div
+      ref={containerRef}
+      style={{ border: '1px solid #555', borderRadius: '0.5rem', overflow: 'hidden', height: '500px', position: 'relative' }}
+    >
       <TransformWrapper
-        initialScale={1}
-        minScale={0.5}
+        ref={transformRef}
+        initialScale={initialScale}
+        minScale={0.3}
         maxScale={4}
         wheel={{ step: 0.1 }}
+        centerOnInit={true}
       >
         <Controls />
         <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }} contentStyle={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-          {children}
+          <div ref={contentRef}>
+            {children}
+          </div>
         </TransformComponent>
       </TransformWrapper>
     </div>
