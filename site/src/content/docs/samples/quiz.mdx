@@ -11,7 +11,7 @@ import Tooltip from '../../../components/Tooltip';
 
 ## 基本的な使い方
 
-`Quiz`コンポーネントをインポートし、`answer`プロップに正解を、`children`に問題文を渡します。
+`Quiz`コンポーネントをインポートし、`question`プロップに問題文を、`children`（タグの中身）に正解を渡します。
 
 ### コード例（文字列の答え）
 
@@ -20,47 +20,39 @@ import Tooltip from '../../../components/Tooltip';
 ```mdx
 import Quiz from '../../../components/Quiz';
 
-<Quiz client:visible answer="DNS（Domain Name System）">
-  ドメイン名とIPアドレスを変換するシステムは何でしょう？
+<Quiz client:visible question="ドメイン名とIPアドレスを変換するシステムは何でしょう？">
+  DNS（Domain Name System）
 </Quiz>
 ```
 
 ### プレビュー
 
-<Quiz client:visible answer="DNS（Domain Name System）">
-  ドメイン名とIPアドレスを変換するシステムは何でしょう？
+<Quiz client:visible question="ドメイン名とIPアドレスを変換するシステムは何でしょう？">
+  DNS（Domain Name System）
 </Quiz>
 
 ## リッチテキストの答え
 
-`answer`プロップには、文字列だけでなく、JSX要素（HTMLタグや他のコンポーネントを含むコンテンツ）を渡すことも可能です。
+`children`には、文字列だけでなく、JSX要素（HTMLタグや他のコンポーネントを含むコンテンツ）を渡すことも可能です。
 解説を含めたり、重要な部分を太字にしたりする場合に便利です。
-**注意:** MDXファイル内でJSXをプロップとして渡す際は、`<>...</>`フラグメントで囲むか、適切な親要素で囲む必要があります。
+`children`として渡すため、以前のようにフラグメントで囲む必要がなく、自然に記述できます。
 
 ### コード例
 
 ```mdx
 import Quiz from '../../../components/Quiz';
 
-<Quiz client:visible answer={
-  <>
-    正解は <strong>3ウェイハンドシェイク</strong> です。<br/>
-    SYN → SYN/ACK → ACK の順で接続を確立します。
-  </>
-}>
-  TCPの接続確立手順を何と呼ぶでしょう？
+<Quiz client:visible question="TCPの接続確立手順を何と呼ぶでしょう？">
+  正解は <strong>3ウェイハンドシェイク</strong> です。<br/>
+  SYN → SYN/ACK → ACK の順で接続を確立します。
 </Quiz>
 ```
 
 ### プレビュー
 
-<Quiz client:visible answer={
-  <>
-    正解は <strong>3ウェイハンドシェイク</strong> です。<br/>
-    SYN → SYN/ACK → ACK の順で接続を確立します。
-  </>
-}>
-  TCPの接続確立手順を何と呼ぶでしょう？
+<Quiz client:visible question="TCPの接続確立手順を何と呼ぶでしょう？">
+  正解は <strong>3ウェイハンドシェイク</strong> です。<br/>
+  SYN → SYN/ACK → ACK の順で接続を確立します。
 </Quiz>
 
 ## 他のコンポーネントとの組み合わせ
@@ -73,23 +65,19 @@ import Quiz from '../../../components/Quiz';
 import Quiz from '../../../components/Quiz';
 import Tooltip from '../../../components/Tooltip';
 
-<Quiz client:visible answer={
+<Quiz client:visible question="ネットワーク層で動作し、エラー通知や情報照会を行うプロトコルは何でしょう？">
   <div>
     正解は <Tooltip client:visible content="ICMP" description="Internet Control Message Protocol。ネットワークの疎通確認やエラー通知に使われる。" /> です。<br/>
     Pingコマンドはこのプロトコルを使用しています。
   </div>
-}>
-  ネットワーク層で動作し、エラー通知や情報照会を行うプロトコルは何でしょう？
 </Quiz>
 ```
 
 ### プレビュー
 
-<Quiz client:visible answer={
+<Quiz client:visible question="ネットワーク層で動作し、エラー通知や情報照会を行うプロトコルは何でしょう？">
   <div>
     正解は <Tooltip client:visible content="ICMP" description="Internet Control Message Protocol。ネットワークの疎通確認やエラー通知に使われる。" /> です。<br/>
     Pingコマンドはこのプロトコルを使用しています。
   </div>
-}>
-  ネットワーク層で動作し、エラー通知や情報照会を行うプロトコルは何でしょう？
 </Quiz>
