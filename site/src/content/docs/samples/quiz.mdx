@@ -4,7 +4,6 @@ description: クイズ形式で問題と答えを表示するQuizコンポーネ
 ---
 
 import Quiz from '../../../components/Quiz';
-import Tooltip from '../../../components/Tooltip';
 
 `Quiz`は、問題文を表示し、ボタンをクリックすることで答えを表示・非表示にできるインタラクティブなコンポーネントです。
 学習内容の理解度確認や、暗記項目のチェックなどに活用できます。
@@ -63,33 +62,3 @@ import Quiz from '../../../components/Quiz';
   TCPの接続確立手順を何と呼ぶでしょう？
 </Quiz>
 
-## 他のコンポーネントとの組み合わせ
-
-`Quiz`の中に`Tooltip`などの他のコンポーネントを含めることも可能です。
-
-### コード例
-
-```mdx
-import Quiz from '../../../components/Quiz';
-import Tooltip from '../../../components/Tooltip';
-
-<Quiz client:visible answer={
-  <div>
-    正解は <Tooltip client:load content="ICMP" description="Internet Control Message Protocol。ネットワークの疎通確認やエラー通知に使われる。" /> です。<br/>
-    Pingコマンドはこのプロトコルを使用しています。
-  </div>
-}>
-  ネットワーク層で動作し、エラー通知や情報照会を行うプロトコルは何でしょう？
-</Quiz>
-```
-
-### プレビュー
-
-<Quiz client:visible answer={
-  <div>
-    正解は <Tooltip client:load content="ICMP" description="Internet Control Message Protocol。ネットワークの疎通確認やエラー通知に使われる。" /> です。<br/>
-    Pingコマンドはこのプロトコルを使用しています。
-  </div>
-}>
-  ネットワーク層で動作し、エラー通知や情報照会を行うプロトコルは何でしょう？
-</Quiz>
