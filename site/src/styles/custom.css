@@ -1,0 +1,33 @@
+/* H2: Underline */
+.sl-markdown-content h2 {
+  border-bottom: 1px solid var(--sl-color-gray-5);
+  padding-bottom: 0.5rem;
+  margin-top: 2.5rem;
+}
+
+/* H3: Left Accent Border */
+.sl-markdown-content h3 {
+  border-left: 4px solid var(--sl-color-accent);
+  padding-left: 0.75rem;
+  margin-top: 2rem;
+}
+
+/* Blockquote: Stylish Quote */
+.sl-markdown-content blockquote {
+  border-left: 4px solid var(--sl-color-accent-high);
+  background-color: var(--sl-color-gray-6);
+  color: var(--sl-color-gray-2);
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+/* Code blocks (inline): Highlight */
+.sl-markdown-content :not(pre) > code {
+  color: var(--sl-color-text-accent);
+  background-color: var(--sl-color-bg-nav);
+}
+
+/* Strong: Slightly different color */
+.sl-markdown-content strong {
+  color: var(--sl-color-text-accent);
+}

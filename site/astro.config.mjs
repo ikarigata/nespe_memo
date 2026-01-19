@@ -10,6 +10,7 @@ export default defineConfig({
 		starlight({
 			title: 'ネスぺ学習メモ',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
+			customCss: ['./src/styles/custom.css'],
 			sidebar: [
 				{
 					label: '知識編',
