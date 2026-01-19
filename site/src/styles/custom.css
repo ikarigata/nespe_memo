@@ -31,3 +31,8 @@
 .sl-markdown-content strong {
   color: var(--sl-color-text-accent);
 }
+
+/* Hide header anchor links */
+.sl-anchor-link {
+  display: none;
+}
