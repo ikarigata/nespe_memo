@@ -1,11 +1,11 @@
 import React, { useState, type ReactNode } from 'react';
 
 interface QuizProps {
-  answer: ReactNode;
+  question: ReactNode;
   children: ReactNode;
 }
 
-const Quiz = ({ answer, children }: QuizProps) => {
+const Quiz = ({ question, children }: QuizProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -18,7 +18,7 @@ const Quiz = ({ answer, children }: QuizProps) => {
     }}>
       <div style={{ marginBottom: '1rem', fontWeight: 'bold', display: 'flex', alignItems: 'flex-start' }}>
         <span style={{ marginRight: '0.5rem', color: 'var(--sl-color-accent-high, #2ca4b0)' }}>Q.</span>
-        <div>{children}</div>
+        <div>{question}</div>
       </div>
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -44,7 +44,7 @@ const Quiz = ({ answer, children }: QuizProps) => {
           borderLeft: '4px solid var(--sl-color-accent, #2ca4b0)'
         }}>
           <div style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Answer:</div>
-          <div>{answer}</div>
+          <div>{children}</div>
         </div>
       )}
     </div>
