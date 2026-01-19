@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { TransformWrapper, TransformComponent, useControls } from 'react-zoom-pan-pinch';
+import type { ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
 
-const wheelConfig = { step: 0.1 };
+const CONTAINER_HEIGHT = 350;
+const ACTIVE_ZONE_RATIO = 0.7;
 
 const Controls = () => {
   const { resetTransform } = useControls();
@@ -34,17 +36,113 @@ const Controls = () => {
 };
 
 export const MermaidBox = ({ children }: { children: React.ReactNode }) => {
+  const transformRef = useRef<ReactZoomPanPinchRef>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [initialScale, setInitialScale] = useState(1);
+  const [isPanEnabled, setIsPanEnabled] = useState(true);
+
+  const isInActiveZone = useCallback((clientX: number, clientY: number): boolean => {
+    if (!containerRef.current) return true;
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const relX = (clientX - rect.left) / rect.width;
+    const relY = (clientY - rect.top) / rect.height;
+
+    const margin = (1 - ACTIVE_ZONE_RATIO) / 2;
+    return relX >= margin && relX <= 1 - margin && relY >= margin && relY <= 1 - margin;
+  }, []);
+
+  const handlePanningStart = useCallback((ref: ReactZoomPanPinchRef, event: TouchEvent | MouseEvent) => {
+    let clientX: number, clientY: number;
+
+    if ('touches' in event && event.touches.length > 0) {
+      clientX = event.touches[0].clientX;
+      clientY = event.touches[0].clientY;
+    } else if ('clientX' in event) {
+      clientX = event.clientX;
+      clientY = event.clientY;
+    } else {
+      return;
+    }
+
+    if (!isInActiveZone(clientX, clientY)) {
+      setIsPanEnabled(false);
+      ref.instance.isPanning = false;
+    }
+  }, [isInActiveZone]);
+
+  const handlePanningStop = useCallback(() => {
+    setIsPanEnabled(true);
+  }, []);
+
+  useEffect(() => {
+    const fitToContainer = () => {
+      if (!containerRef.current || !contentRef.current) return;
+
+      const container = containerRef.current;
+      const content = contentRef.current.querySelector('pre, svg, .mermaid');
+
+      if (!content) return;
+
+      const containerWidth = container.clientWidth;
+      const containerHeight = container.clientHeight;
+      const contentWidth = content.scrollWidth || content.clientWidth;
+      const contentHeight = content.scrollHeight || content.clientHeight;
+
+      if (contentWidth === 0 || contentHeight === 0) return;
+
+      const padding = 40;
+      const scaleX = (containerWidth - padding) / contentWidth;
+      const scaleY = (containerHeight - padding) / contentHeight;
+      const scale = Math.min(scaleX, scaleY, 2);
+
+      if (scale > 0 && scale !== Infinity) {
+        setInitialScale(scale);
+        if (transformRef.current) {
+          transformRef.current.centerView(scale);
+        }
+      }
+    };
+
+    const timer = setTimeout(fitToContainer, 100);
+    const observer = new MutationObserver(() => {
+      setTimeout(fitToContainer, 50);
+    });
+
+    if (contentRef.current) {
+      observer.observe(contentRef.current, { childList: true, subtree: true });
+    }
+
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, []);
+
   return (
-    <div style={{ border: '1px solid #555', borderRadius: '0.5rem', overflow: 'hidden', height: '500px', position: 'relative' }}>
+    <div
+      ref={containerRef}
+      style={{ border: '1px solid #555', borderRadius: '0.5rem', overflow: 'hidden', height: `${CONTAINER_HEIGHT}px`, position: 'relative' }}
+    >
       <TransformWrapper
-        initialScale={1}
-        minScale={0.5}
+        ref={transformRef}
+        initialScale={initialScale}
+        minScale={0.3}
         maxScale={4}
         wheel={{ step: 0.1 }}
+        centerOnInit={true}
+        limitToBounds={false}
+        alignmentAnimation={{ disabled: true }}
+        panning={{ disabled: !isPanEnabled }}
+        onPanningStart={handlePanningStart}
+        onPanningStop={handlePanningStop}
       >
         <Controls />
         <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }} contentStyle={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-          {children}
+          <div ref={contentRef}>
+            {children}
+          </div>
         </TransformComponent>
       </TransformWrapper>
     </div>
