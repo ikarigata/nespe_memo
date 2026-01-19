@@ -2,6 +2,8 @@
 title: Webプロトコルの進化 (HTTP/1.1, HTTP/2, HTTP/3)
 ---
 
+import { MermaidBox } from '../../../components/MermaidBox';
+
 Webの基盤となるHTTPプロトコルは、リッチなコンテンツの増加やモバイル通信の普及に合わせて進化してきました。試験では、各バージョンの違い、特にパフォーマンス改善の仕組みと、最新のHTTP/3 (QUIC) の特徴が問われます。
 
 ## プロトコルの変遷と概要
@@ -30,6 +32,9 @@ GoogleのSPDYプロトコルをベースに策定されました。
 ### 1. ストリーム多重化
 1つのTCP接続の中に複数の「ストリーム」を作り、リクエストとレスポンスを並列に処理します。
 
+
+<MermaidBox client:visible>
+
 ```mermaid
 graph LR
     subgraph tcp1["HTTP/1.1 (TCP接続)"]
@@ -56,6 +61,9 @@ graph LR
     style tcp2 fill:#e3f2fd
 ```
 
+</MermaidBox>
+
+
 ### 2. その他の機能
 - **HPACK**: ヘッダー圧縮技術。差分のみを送信することで通信量を削減。
 - **バイナリフレーミング**: テキストではなくバイナリ形式でデータをやり取りし、解析効率を向上。
@@ -71,6 +79,9 @@ HTTPレベルのHOLブロッキングは解消しましたが、**TCPレベル�
 TCPを捨て、UDP上に構築された新しいトランスポートプロトコル **QUIC** を採用しました。
 
 ### プロトコルスタックの比較
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 block-beta
@@ -101,6 +112,9 @@ block-beta
     style UDP fill:#c8e6c9
 ```
 
+</MermaidBox>
+
+
 ### HTTP/3 (QUIC) のメリット
 
 1.  **接続確立の高速化 (0-RTT / 1-RTT)**
@@ -123,6 +137,9 @@ block-beta
 2.  **トランスポート層の違い**: HTTP/1.1, 2はTCP、HTTP/3はUDP。
 3.  **QUICの特徴**: TLS 1.3が必須（統合されている）、コネクションIDによるローミング対応。
 
+
+<MermaidBox client:visible>
+
 ```mermaid
 mindmap
   root((Webプロトコル))
@@ -141,3 +158,5 @@ mindmap
       高速ハンドシェイク
       接続維持 ローミング
 ```
+
+</MermaidBox>
