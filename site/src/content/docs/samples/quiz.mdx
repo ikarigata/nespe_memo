@@ -62,3 +62,32 @@ import Quiz from '../../../components/Quiz';
   TCPの接続確立手順を何と呼ぶでしょう？
 </Quiz>
 
+## 他のコンポーネントとの組み合わせ
+
+`Quiz`の中に他のコンポーネントを含めることも可能です。
+
+### コード例
+
+```mdx
+import Quiz from '../../../components/Quiz';
+
+<Quiz client:visible answer={
+  <div>
+    正解は ICMP です。<br/>
+    Pingコマンドはこのプロトコルを使用しています。
+  </div>
+}>
+  ネットワーク層で動作し、エラー通知や情報照会を行うプロトコルは何でしょう？
+</Quiz>
+```
+
+### プレビュー
+
+<Quiz client:visible answer={
+  <div>
+    正解は ICMP です。<br/>
+    Pingコマンドはこのプロトコルを使用しています。
+  </div>
+}>
+  ネットワーク層で動作し、エラー通知や情報照会を行うプロトコルは何でしょう？
+</Quiz>
