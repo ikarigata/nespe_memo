@@ -2,6 +2,8 @@
 title: ロードバランサーと負荷分散技術
 ---
 
+import { MermaidBox } from '../../../components/MermaidBox';
+
 Webサービスの大規模化に伴い、トラフィックを複数のサーバーに分散させるロードバランサー（LB）は必須の技術となっています。試験では、L4/L7の違い、セッション維持の方法、ヘルスチェックの仕組みが頻出です。
 
 ## ロードバランサーの種類
@@ -14,6 +16,9 @@ OSI参照モデルのどの層で振り分けを行うかによって、大き�
 |:---|:---|:---|:---|
 | **L4 LB** | トランスポート層<br/>(TCP/UDP) | IPアドレス、ポート番号 | 高速。パケットの中身（HTTPヘッダ等）は見ない。 |
 | **L7 LB** | アプリケーション層<br/>(HTTP/HTTPS) | URL、Cookie、HTTPヘッダ、User-Agent | 柔軟な振り分けが可能。SSL終端処理も行える。 |
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph TB
@@ -36,6 +41,9 @@ graph TB
     style L4LB fill:#bbdefb
     style L7LB fill:#c8e6c9
 ```
+
+</MermaidBox>
+
 
 ---
 
@@ -67,6 +75,9 @@ ECサイトのカート情報など、一連の通信を同じサーバーで処
     - **Cookie書き換え (Cookie Rewrite)**: サーバーが発行したCookieをLBが書き換えて利用する。
     - 最も確実で柔軟な方法。
 
+
+<MermaidBox client:visible>
+
 ```mermaid
 sequenceDiagram
     participant CLI as クライアント
@@ -86,6 +97,9 @@ sequenceDiagram
     SRV-->>LB: HTTP Response
     LB-->>CLI: HTTP Response
 ```
+
+</MermaidBox>
+
 
 ---
 
@@ -114,6 +128,9 @@ sequenceDiagram
 ### DSR (Direct Server Return)
 行きはLBを経由し、帰りのパケットはサーバーからクライアントへ直接返す方式です。
 
+
+<MermaidBox client:visible>
+
 ```mermaid
 graph TB
     CLI["クライアント"]
@@ -131,6 +148,9 @@ graph TB
     linkStyle 2 stroke:#ff5722,stroke-width:2px;
 ```
 
+</MermaidBox>
+
+
 - **特徴**: 応答トラフィック（大容量になりがち）がLBを通らないため、LBの帯域負荷を大幅に削減できる。
 - **要件**: サーバーのループバックインターフェースにVIP（仮想IP）を設定する必要がある。L7処理（Cookie挿入など）はできない。
 
@@ -142,6 +162,9 @@ graph TB
 2.  **セッション維持**: プロキシ環境下ではIPハッシュが効かない（Cookie方式が有効）という文脈で出題される。
 3.  **ヘルスチェックの失敗**: サーバーが高負荷で応答できない場合、L3チェックは成功するがL7チェックは失敗する、といった違い。
 4.  **DSRの制約**: 戻りのパケットがLBを通らないため、L7機能が使えない点や、ネットワーク構成上の注意点。
+
+
+<MermaidBox client:visible>
 
 ```mermaid
 mindmap
@@ -160,3 +183,5 @@ mindmap
       ヘルスチェック L3/L4/L7
       DSR 戻り通信直接
 ```
+
+</MermaidBox>
