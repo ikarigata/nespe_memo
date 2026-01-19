@@ -7,6 +7,11 @@ import react from '@astrojs/react';
 // https://astro.build/config
 export default defineConfig({
 	integrations: [
+		mermaid({
+			theme: 'dark',
+			// @ts-ignore
+			autoTheme: false,
+		}),
 		starlight({
 			title: 'ネスぺ学習メモ',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
@@ -26,7 +31,6 @@ export default defineConfig({
 				},
 			],
 		}),
-		mermaid(),
 		react(),
 	],
 });
