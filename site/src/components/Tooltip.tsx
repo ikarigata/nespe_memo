@@ -40,9 +40,7 @@ const Tooltip = ({ content, description }: TooltipProps) => {
     ],
   });
 
-  const click = useClick(context, {
-    ignoreMouse: true,
-  });
+  const click = useClick(context);
   const hover = useHover(context, {
     move: false,
     delay: { open: 0, close: 150 },
