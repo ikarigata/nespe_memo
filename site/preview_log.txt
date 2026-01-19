@@ -1,0 +1,12 @@
+
+> site@0.0.1 preview
+> astro preview
+
+03:14:22 [astro-mermaid] Setting up Mermaid integration
+03:14:22 [astro-mermaid] Existing rehype plugins:
+03:14:22 [astro-mermaid] Skipping ELK support
+
+ astro  v5.16.11 ready in 26 ms
+
+┃ Local    http://localhost:4321/
+┃ Network  use --host to expose

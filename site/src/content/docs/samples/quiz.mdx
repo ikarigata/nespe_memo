@@ -1,0 +1,95 @@
+---
+title: Quizの使い方
+description: クイズ形式で問題と答えを表示するQuizコンポーネントの使い方
+---
+
+import Quiz from '../../../components/Quiz';
+import Tooltip from '../../../components/Tooltip';
+
+`Quiz`は、問題文を表示し、ボタンをクリックすることで答えを表示・非表示にできるインタラクティブなコンポーネントです。
+学習内容の理解度確認や、暗記項目のチェックなどに活用できます。
+
+## 基本的な使い方
+
+`Quiz`コンポーネントをインポートし、`answer`プロップに正解を、`children`に問題文を渡します。
+
+### コード例（文字列の答え）
+
+シンプルな文字列の答えを表示する場合の例です。
+
+```mdx
+import Quiz from '../../../components/Quiz';
+
+<Quiz client:visible answer="DNS（Domain Name System）">
+  ドメイン名とIPアドレスを変換するシステムは何でしょう？
+</Quiz>
+```
+
+### プレビュー
+
+<Quiz client:visible answer="DNS（Domain Name System）">
+  ドメイン名とIPアドレスを変換するシステムは何でしょう？
+</Quiz>
+
+## リッチテキストの答え
+
+`answer`プロップには、文字列だけでなく、JSX要素（HTMLタグや他のコンポーネントを含むコンテンツ）を渡すことも可能です。
+解説を含めたり、重要な部分を太字にしたりする場合に便利です。
+**注意:** MDXファイル内でJSXをプロップとして渡す際は、`<>...</>`フラグメントで囲むか、適切な親要素で囲む必要があります。
+
+### コード例
+
+```mdx
+import Quiz from '../../../components/Quiz';
+
+<Quiz client:visible answer={
+  <>
+    正解は <strong>3ウェイハンドシェイク</strong> です。<br/>
+    SYN → SYN/ACK → ACK の順で接続を確立します。
+  </>
+}>
+  TCPの接続確立手順を何と呼ぶでしょう？
+</Quiz>
+```
+
+### プレビュー
+
+<Quiz client:visible answer={
+  <>
+    正解は <strong>3ウェイハンドシェイク</strong> です。<br/>
+    SYN → SYN/ACK → ACK の順で接続を確立します。
+  </>
+}>
+  TCPの接続確立手順を何と呼ぶでしょう？
+</Quiz>
+
+## 他のコンポーネントとの組み合わせ
+
+`Quiz`の中に`Tooltip`などの他のコンポーネントを含めることも可能です。
+
+### コード例
+
+```mdx
+import Quiz from '../../../components/Quiz';
+import Tooltip from '../../../components/Tooltip';
+
+<Quiz client:visible answer={
+  <div>
+    正解は <Tooltip client:visible content="ICMP" description="Internet Control Message Protocol。ネットワークの疎通確認やエラー通知に使われる。" /> です。<br/>
+    Pingコマンドはこのプロトコルを使用しています。
+  </div>
+}>
+  ネットワーク層で動作し、エラー通知や情報照会を行うプロトコルは何でしょう？
+</Quiz>
+```
+
+### プレビュー
+
+<Quiz client:visible answer={
+  <div>
+    正解は <Tooltip client:visible content="ICMP" description="Internet Control Message Protocol。ネットワークの疎通確認やエラー通知に使われる。" /> です。<br/>
+    Pingコマンドはこのプロトコルを使用しています。
+  </div>
+}>
+  ネットワーク層で動作し、エラー通知や情報照会を行うプロトコルは何でしょう？
+</Quiz>

@@ -19,6 +19,10 @@ export default defineConfig({
 					label: 'テクニック編',
 					autogenerate: { directory: 'skills' },
 				},
+				{
+					label: 'サンプル',
+					autogenerate: { directory: 'samples' },
+				},
 			],
 		}),
 		mermaid(),
