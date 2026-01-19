@@ -1,6 +1,9 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { TransformWrapper, TransformComponent, useControls } from 'react-zoom-pan-pinch';
 import type { ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
+
+const CONTAINER_HEIGHT = 350;
+const ACTIVE_ZONE_RATIO = 0.7;
 
 const Controls = () => {
   const { resetTransform } = useControls();
@@ -37,6 +40,41 @@ export const MermaidBox = ({ children }: { children: React.ReactNode }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [initialScale, setInitialScale] = useState(1);
+  const [isPanEnabled, setIsPanEnabled] = useState(true);
+
+  const isInActiveZone = useCallback((clientX: number, clientY: number): boolean => {
+    if (!containerRef.current) return true;
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const relX = (clientX - rect.left) / rect.width;
+    const relY = (clientY - rect.top) / rect.height;
+
+    const margin = (1 - ACTIVE_ZONE_RATIO) / 2;
+    return relX >= margin && relX <= 1 - margin && relY >= margin && relY <= 1 - margin;
+  }, []);
+
+  const handlePanningStart = useCallback((ref: ReactZoomPanPinchRef, event: TouchEvent | MouseEvent) => {
+    let clientX: number, clientY: number;
+
+    if ('touches' in event && event.touches.length > 0) {
+      clientX = event.touches[0].clientX;
+      clientY = event.touches[0].clientY;
+    } else if ('clientX' in event) {
+      clientX = event.clientX;
+      clientY = event.clientY;
+    } else {
+      return;
+    }
+
+    if (!isInActiveZone(clientX, clientY)) {
+      setIsPanEnabled(false);
+      ref.instance.isPanning = false;
+    }
+  }, [isInActiveZone]);
+
+  const handlePanningStop = useCallback(() => {
+    setIsPanEnabled(true);
+  }, []);
 
   useEffect(() => {
     const fitToContainer = () => {
@@ -85,7 +123,7 @@ export const MermaidBox = ({ children }: { children: React.ReactNode }) => {
   return (
     <div
       ref={containerRef}
-      style={{ border: '1px solid #555', borderRadius: '0.5rem', overflow: 'hidden', height: '500px', position: 'relative' }}
+      style={{ border: '1px solid #555', borderRadius: '0.5rem', overflow: 'hidden', height: `${CONTAINER_HEIGHT}px`, position: 'relative' }}
     >
       <TransformWrapper
         ref={transformRef}
@@ -96,6 +134,9 @@ export const MermaidBox = ({ children }: { children: React.ReactNode }) => {
         centerOnInit={true}
         limitToBounds={false}
         alignmentAnimation={{ disabled: true }}
+        panning={{ disabled: !isPanEnabled }}
+        onPanningStart={handlePanningStart}
+        onPanningStop={handlePanningStop}
       >
         <Controls />
         <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }} contentStyle={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
