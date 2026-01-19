@@ -1,0 +1,51 @@
+---
+title: Tooltipの使い方
+description: 用語の補足説明を表示するTooltipコンポーネントの使い方
+---
+
+import Tooltip from '../../../components/Tooltip';
+
+`Tooltip`は、マウスホバー時に補足情報をポップアップ表示するためのコンポーネントです。
+専門用語の解説や、略語の正式名称などを表示するのに便利です。
+
+## 基本的な使い方
+
+`Tooltip`コンポーネントをインポートし、以下のプロップを指定します。
+
+- `content`: 常に表示されるテキスト（ホバー対象）。
+- `description`: ホバー時に表示される説明文。
+
+### コード例
+
+```mdx
+import Tooltip from '../../../components/Tooltip';
+
+文章中に<Tooltip client:visible content="ARP" description="Address Resolution Protocol。IPアドレスからMACアドレスを求めるプロトコル。" />などの用語が出てきた場合、マウスカーソルを合わせると意味が表示されます。
+```
+
+### プレビュー
+
+文章中に<Tooltip client:visible content="ARP" description="Address Resolution Protocol。IPアドレスからMACアドレスを求めるプロトコル。" />などの用語が出てきた場合、マウスカーソルを合わせると意味が表示されます。
+
+## 複数のツールチップの配置
+
+文章内に複数のツールチップを自然に配置できます。
+
+### コード例
+
+```mdx
+import Tooltip from '../../../components/Tooltip';
+
+<Tooltip client:visible content="DHCP" description="Dynamic Host Configuration Protocol" />サーバーがIPアドレスを割り当て、
+<Tooltip client:visible content="DNS" description="Domain Name System" />サーバーが名前解決を行います。
+```
+
+### プレビュー
+
+<Tooltip client:visible content="DHCP" description="Dynamic Host Configuration Protocol" />サーバーがIPアドレスを割り当て、
+<Tooltip client:visible content="DNS" description="Domain Name System" />サーバーが名前解決を行います。
+
+## 注意点
+
+- `client:visible` ディレクティブを付与することで、マウスイベント（`onMouseEnter`, `onMouseLeave`）が正常に動作するようになります。
+- ツールチップの説明文（`description`）が長すぎる場合、モバイル端末などで画面からはみ出る可能性があります。簡潔な説明を心がけてください。
