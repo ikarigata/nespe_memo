@@ -94,6 +94,8 @@ export const MermaidBox = ({ children }: { children: React.ReactNode }) => {
         maxScale={4}
         wheel={{ step: 0.1 }}
         centerOnInit={true}
+        limitToBounds={false}
+        alignmentAnimation={{ disabled: true }}
       >
         <Controls />
         <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }} contentStyle={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
