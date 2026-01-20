@@ -1,5 +1,5 @@
 // L1_RepeaterHub.ts
-import { Port } from '../layer1/Port';
+import { Port } from './Port';
 import { Signal } from './Signal';
 
 export class RepeaterHub {
