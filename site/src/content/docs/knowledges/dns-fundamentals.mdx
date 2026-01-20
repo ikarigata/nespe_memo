@@ -92,36 +92,6 @@ graph TB
 
 ## DNSサーバーの種類
 
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph dns_types["DNSサーバーの種類"]
-        subgraph auth["権威DNSサーバー"]
-            PRIMARY["プライマリ<br/>（マスター）"]
-            SECONDARY["セカンダリ<br/>（スレーブ）"]
-        end
-
-        subgraph cache["キャッシュDNSサーバー"]
-            RESOLVER["フルリゾルバ<br/>（再帰問い合わせ）"]
-            FORWARDER["フォワーダ<br/>（転送のみ）"]
-        end
-    end
-
-    PRIMARY -->|"ゾーン転送"| SECONDARY
-    RESOLVER -->|"問い合わせ"| PRIMARY
-    RESOLVER -->|"問い合わせ"| SECONDARY
-
-    style PRIMARY fill:#ffcdd2
-    style SECONDARY fill:#fff3e0
-    style RESOLVER fill:#c8e6c9
-    style FORWARDER fill:#e3f2fd
-```
-
-</MermaidBox>
-
-
 | 種類 | 役割 | 特徴 |
 |:---|:---|:---|
 | プライマリ | ゾーン情報の原本を保持 | ゾーンファイルを直接管理 |
@@ -167,69 +137,21 @@ sequenceDiagram
 
 
 
-<MermaidBox client:visible>
+### クエリの種類
 
-```mermaid
-graph TB
-    subgraph query_types["クエリの種類"]
-        subgraph recursive["再帰クエリ"]
-            R1["クライアントが送信"]
-            R2["完全な回答を要求"]
-            R3["キャッシュDNSが<br/>代わりに解決"]
-        end
-
-        subgraph iterative["反復クエリ"]
-            I1["キャッシュDNSが送信"]
-            I2["参照先を返してもよい"]
-            I3["次の問い合わせ先を<br/>段階的に辿る"]
-        end
-    end
-
-    style R1 fill:#e3f2fd
-    style R2 fill:#e3f2fd
-    style R3 fill:#e3f2fd
-    style I1 fill:#c8e6c9
-    style I2 fill:#c8e6c9
-    style I3 fill:#c8e6c9
-```
-
-</MermaidBox>
+- **再帰クエリ**
+  - クライアントが送信
+  - 完全な回答を要求
+  - キャッシュDNSが代わりに解決
+- **反復クエリ**
+  - キャッシュDNSが送信
+  - 参照先を返してもよい
+  - 次の問い合わせ先を段階的に辿る
 
 
 ---
 
 ## DNSレコードタイプ
-
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph records["主要なDNSレコード"]
-        A["Aレコード<br/>IPv4アドレス"]
-        AAAA["AAAAレコード<br/>IPv6アドレス"]
-        CNAME["CNAMEレコード<br/>エイリアス"]
-        MX["MXレコード<br/>メールサーバー"]
-        NS["NSレコード<br/>ネームサーバー"]
-        TXT["TXTレコード<br/>テキスト情報"]
-        PTR["PTRレコード<br/>逆引き"]
-        SOA["SOAレコード<br/>ゾーン管理情報"]
-        SRV["SRVレコード<br/>サービス場所"]
-    end
-
-    style A fill:#ffcdd2
-    style AAAA fill:#ffcdd2
-    style CNAME fill:#c8e6c9
-    style MX fill:#fff3e0
-    style NS fill:#e3f2fd
-    style TXT fill:#bbdefb
-    style PTR fill:#f3e5f5
-    style SOA fill:#fce4ec
-    style SRV fill:#e8f5e9
-```
-
-</MermaidBox>
-
 
 | レコード | 用途 | 例 |
 |:---|:---|:---|
@@ -245,32 +167,6 @@ graph TB
 
 ### MXレコードの優先度
 
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph mx["MXレコードの優先度"]
-        SENDER["送信サーバー"]
-
-        MX1["MXレコード<br/>優先度: 10<br/>mail1.example.com"]
-        MX2["MXレコード<br/>優先度: 20<br/>mail2.example.com"]
-        MX3["MXレコード<br/>優先度: 30<br/>mail3.example.com"]
-    end
-
-    SENDER -->|"1. 最優先"| MX1
-    SENDER -.->|"2. 障害時"| MX2
-    SENDER -.->|"3. 最後の手段"| MX3
-
-    style SENDER fill:#e3f2fd
-    style MX1 fill:#c8e6c9
-    style MX2 fill:#fff3e0
-    style MX3 fill:#ffcdd2
-```
-
-</MermaidBox>
-
-
 **ポイント:** 優先度の数値が小さいほど優先される
 
 ---
@@ -279,39 +175,8 @@ graph TB
 
 ### AXFR と IXFR
 
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph zone_transfer["ゾーン転送の種類"]
-        subgraph axfr["AXFR（フル転送）"]
-            A1["ゾーン全体を転送"]
-            A2["初回同期に使用"]
-            A3["データ量が大きい"]
-        end
-
-        subgraph ixfr["IXFR（差分転送）"]
-            I1["変更分のみ転送"]
-            I2["定期同期に使用"]
-            I3["効率的"]
-        end
-    end
-
-    PRIMARY["プライマリ"]
-    SECONDARY["セカンダリ"]
-
-    PRIMARY -->|"AXFR/IXFR"| SECONDARY
-
-    style A1 fill:#ffcdd2
-    style A2 fill:#ffcdd2
-    style A3 fill:#ffcdd2
-    style I1 fill:#c8e6c9
-    style I2 fill:#c8e6c9
-    style I3 fill:#c8e6c9
-```
-
-</MermaidBox>
+- **AXFR（フル転送）**: ゾーン全体を転送。初回同期に使用。データ量が大きい。
+- **IXFR（差分転送）**: 変更分のみ転送。定期同期に使用。効率的。
 
 
 ### ゾーン転送のトリガー
@@ -344,30 +209,6 @@ sequenceDiagram
 
 
 ### SOAレコードの構成
-
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph soa["SOAレコードの要素"]
-        MNAME["MNAME<br/>プライマリサーバー名"]
-        RNAME["RNAME<br/>管理者メールアドレス"]
-        SERIAL["SERIAL<br/>シリアル番号"]
-        REFRESH["REFRESH<br/>更新間隔"]
-        RETRY["RETRY<br/>再試行間隔"]
-        EXPIRE["EXPIRE<br/>有効期限"]
-        MINIMUM["MINIMUM<br/>ネガティブキャッシュTTL"]
-    end
-
-    style SERIAL fill:#ffcdd2
-    style REFRESH fill:#c8e6c9
-    style RETRY fill:#c8e6c9
-    style EXPIRE fill:#fff3e0
-```
-
-</MermaidBox>
-
 
 | フィールド | 説明 | 典型値 |
 |:---|:---|:---|
@@ -449,30 +290,10 @@ graph TB
 
 ### 対策
 
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph countermeasures["キャッシュポイズニング対策"]
-        PORT["ソースポート<br/>ランダム化"]
-        TXID["トランザクションID<br/>ランダム化"]
-        DNSSEC["DNSSEC<br/>（電子署名）"]
-        RATE["レートリミット"]
-    end
-
-    PORT --> EFFECT1["予測困難に"]
-    TXID --> EFFECT1
-    DNSSEC --> EFFECT2["応答の検証"]
-    RATE --> EFFECT3["攻撃の抑制"]
-
-    style PORT fill:#c8e6c9
-    style TXID fill:#c8e6c9
-    style DNSSEC fill:#e3f2fd
-    style RATE fill:#fff3e0
-```
-
-</MermaidBox>
+- **ソースポートのランダム化**: 予測困難にする
+- **トランザクションIDのランダム化**: 予測困難にする
+- **DNSSEC**: 電子署名による応答の検証
+- **レートリミット**: 攻撃の抑制
 
 
 ### DNSSEC
@@ -632,38 +453,6 @@ blog    IN CNAME www
 ---
 
 ## 試験対策のポイント
-
-
-<MermaidBox client:visible>
-
-```mermaid
-mindmap
-  root((DNS<br/>の要点))
-    名前解決
-      再帰クエリ
-      反復クエリ
-      キャッシュ
-    レコード
-      A/AAAA
-      CNAME
-      MX
-      NS
-      TXT
-      PTR
-      SOA
-    ゾーン転送
-      AXFR
-      IXFR
-      NOTIFY
-      シリアル番号
-    セキュリティ
-      キャッシュポイズニング
-      DNSSEC
-      スプリットDNS
-```
-
-</MermaidBox>
-
 
 1. **クエリの種類を理解する**
    - 再帰クエリ: クライアント→キャッシュDNS

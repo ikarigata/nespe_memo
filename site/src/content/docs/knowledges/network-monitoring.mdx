@@ -132,28 +132,3 @@ graph LR
 2.  **NetFlowとsFlowの違い**: 集計して送るか（NetFlow）、サンプリングして生データを送るか（sFlow）。
 3.  **障害検知**: ポーリング（定期的確認）とトラップ（即時通知）の使い分け。トラップはUDPなのでロストする可能性がある点。
 4.  **コマンド出力の読み取り**: 午後問題では、`ping` や `show ip route` などの実行結果から原因を特定させることが多い。
-
-<MermaidBox client:visible>
-
-```mermaid
-mindmap
-  root((監視と<br/>トラブル対応))
-    SNMP
-      Manager / Agent
-      MIB / OID
-      Trap UDP/162
-      v1/v2c コミュニティ名
-      v3 暗号化・認証
-    フロー解析
-      NetFlow 集計
-      sFlow サンプリング
-    ログ
-      Syslog UDP/514
-      Severity 0-7
-    コマンド
-      ping 疎通
-      traceroute 経路
-      tcpdump キャプチャ
-```
-
-</MermaidBox>

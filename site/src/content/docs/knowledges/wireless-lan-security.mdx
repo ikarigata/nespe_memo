@@ -72,35 +72,6 @@ sequenceDiagram
 
 試験で問われる主要なEAPメソッドの違いを整理します。
 
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph eap_types["主なEAPメソッド"]
-        TLS["EAP-TLS"]
-        PEAP["PEAP"]
-        TTLS["EAP-TTLS"]
-    end
-
-    TLS --> T_CERT["クライアント証明書:<br/>**必要 (必須)**"]
-    TLS --> S_CERT["サーバー証明書:<br/>**必要**"]
-    TLS --> SEC["セキュリティ強度:<br/>**最強**"]
-
-    PEAP --> T_CERT2["クライアント証明書:<br/>**不要**"]
-    PEAP --> S_CERT2["サーバー証明書:<br/>**必要**"]
-    PEAP --> AUTH["クライアント認証:<br/>**ID/パスワード**"]
-
-    TTLS --> T_CERT3["クライアント証明書:<br/>**不要**"]
-    TTLS --> S_CERT3["サーバー証明書:<br/>**必要**"]
-    TTLS --> AUTH2["クライアント認証:<br/>**ID/PW, CHAP等**"]
-
-    style TLS fill:#c8e6c9
-    style PEAP fill:#fff3e0
-    style TTLS fill:#e3f2fd
-```
-
-</MermaidBox>
-
 | EAPメソッド | サーバー証明書 | クライアント証明書 | クライアント認証情報 | 特徴 |
 |:---|:---:|:---:|:---|:---|
 | **EAP-TLS** | 必要 | **必要** | 証明書 | 最も安全だが、証明書配布の手間がかかる。 |
@@ -137,28 +108,3 @@ WPA2の脆弱性（KRACKsなど）への対策として登場しました。
 2.  **802.1X認証の構成**: サプリカント、オーセンティケータ、認証サーバー（RADIUS）の役割分担。
 3.  **EAPメソッドの要件**: 「クライアント証明書が必要なのはEAP-TLS」というのが頻出。
 4.  **WPA3のキーワード**: SAE（対等な認証）、Dragonfly、OWE（オープンでも暗号化）。
-
-<MermaidBox client:visible>
-
-```mermaid
-mindmap
-  root((無線LAN<br/>セキュリティ))
-    暗号化
-      WEP 脆弱
-      WPA/TKIP
-      WPA2/AES CCMP
-      WPA3 SAE/GCMP
-    802.1X認証
-      サプリカント
-      オーセンティケータ
-      RADIUSサーバー
-    EAPメソッド
-      EAP-TLS 証明書必須
-      PEAP ID/PW
-    WPA3
-      SAE 対等認証
-      OWE オープン暗号化
-      前方秘匿性
-```
-
-</MermaidBox>

@@ -8,95 +8,26 @@ import { MermaidBox } from '../../../components/MermaidBox';
 
 ## 冗長化の全体像
 
+### 冗長化の目的
+- 単一障害点（SPOF）の排除
+- サービス継続性の確保
+- 負荷分散によるパフォーマンス向上
 
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph goal["冗長化の目的"]
-        G1["単一障害点<br/>（SPOF）の排除"]
-        G2["サービス継続性<br/>の確保"]
-        G3["負荷分散による<br/>パフォーマンス向上"]
-    end
-
-    subgraph method["実現方法"]
-        M1["機器の二重化"]
-        M2["経路の多重化"]
-        M3["自動切り替え<br/>（フェイルオーバー）"]
-    end
-
-    goal --> method
-
-    style G1 fill:#ffcdd2
-    style G2 fill:#c8e6c9
-    style G3 fill:#bbdefb
-    style M1 fill:#fff3e0
-    style M2 fill:#fff3e0
-    style M3 fill:#fff3e0
-```
-
-</MermaidBox>
+### 実現方法
+- 機器の二重化
+- 経路の多重化
+- 自動切り替え（フェイルオーバー）
 
 
 ---
 
 ## レイヤー別 冗長化技術マップ
 
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph L7["L7 アプリケーション層"]
-        A1["DNSラウンドロビン"]
-        A2["L7ロードバランサー"]
-        A3["CDN"]
-    end
-
-    subgraph L4["L4 トランスポート層"]
-        B1["L4ロードバランサー"]
-        B2["セッション維持"]
-    end
-
-    subgraph L3["L3 ネットワーク層"]
-        C1["VRRP / HSRP"]
-        C2["ECMP"]
-        C3["動的ルーティング<br/>OSPF / BGP"]
-    end
-
-    subgraph L2["L2 データリンク層"]
-        D1["STP / RSTP"]
-        D2["リンクアグリゲーション<br/>（LACP）"]
-        D3["スタック構成"]
-        D4["MC-LAG"]
-    end
-
-    subgraph L1["L1 物理層"]
-        E1["冗長リンク"]
-        E2["冗長電源"]
-        E3["機器の二重化"]
-    end
-
-    L7 --> L4 --> L3 --> L2 --> L1
-
-    style A1 fill:#e1f5fe
-    style A2 fill:#e1f5fe
-    style A3 fill:#e1f5fe
-    style B1 fill:#fff3e0
-    style B2 fill:#fff3e0
-    style C1 fill:#e8f5e9
-    style C2 fill:#e8f5e9
-    style C3 fill:#e8f5e9
-    style D1 fill:#fce4ec
-    style D2 fill:#fce4ec
-    style D3 fill:#fce4ec
-    style D4 fill:#fce4ec
-    style E1 fill:#f3e5f5
-    style E2 fill:#f3e5f5
-    style E3 fill:#f3e5f5
-```
-
-</MermaidBox>
+- **L7 アプリケーション層**: DNSラウンドロビン, L7ロードバランサー, CDN
+- **L4 トランスポート層**: L4ロードバランサー, セッション維持
+- **L3 ネットワーク層**: VRRP / HSRP, ECMP, 動的ルーティング (OSPF / BGP)
+- **L2 データリンク層**: STP / RSTP, リンクアグリゲーション (LACP), スタック構成, MC-LAG
+- **L1 物理層**: 冗長リンク, 冗長電源, 機器の二重化
 
 
 ---
@@ -104,43 +35,6 @@ graph TB
 ## L1: 物理層の冗長化
 
 物理層では、ハードウェアそのものの冗長化を行います。
-
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph physical["物理層の冗長化"]
-        subgraph link["リンクの冗長化"]
-            L1["メインリンク"]
-            L2["バックアップリンク"]
-        end
-
-        subgraph power["電源の冗長化"]
-            P1["電源ユニットA"]
-            P2["電源ユニットB"]
-        end
-
-        subgraph device["機器の冗長化"]
-            D1["メイン機器"]
-            D2["予備機器"]
-        end
-    end
-
-    link --> switch["スイッチ"]
-    power --> switch
-    device --> network["ネットワーク"]
-
-    style L1 fill:#c8e6c9
-    style L2 fill:#c8e6c9
-    style P1 fill:#bbdefb
-    style P2 fill:#bbdefb
-    style D1 fill:#fff3e0
-    style D2 fill:#fff3e0
-```
-
-</MermaidBox>
-
 
 | 技術 | 説明 | 効果 |
 |:---|:---|:---|
@@ -669,34 +563,6 @@ graph TB
 ---
 
 ## 試験対策のポイント
-
-
-<MermaidBox client:visible>
-
-```mermaid
-mindmap
-  root((冗長化技術<br/>の要点))
-    L2の冗長化
-      STP/RSTP
-        ループ防止
-        収束時間の違い
-      LACP
-        帯域幅増加
-        耐障害性
-    L3の冗長化
-      VRRP/HSRP
-        仮想IPアドレス
-        マスター選出
-      動的ルーティング
-        経路の自動切替
-    設計ポイント
-      SPOFの排除
-      収束時間
-      構成パターン
-```
-
-</MermaidBox>
-
 
 1. **各技術の動作原理を理解する**
    - STPのポート状態遷移
