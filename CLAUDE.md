@@ -38,3 +38,40 @@ title: ページタイトル
 ```
 
 Mermaid図のラベルには日本語テキストが使用可能。
+
+## TCP/IP シミュレータ (`site/src/lib/tcpip_sim/`)
+
+ネットワークプロトコルの動作をシミュレートするTypeScriptライブラリ。
+
+### ドキュメント
+
+| ファイル | 内容 |
+|----------|------|
+| `doc.md` | 設計ドキュメント（全体方針、データモデル、ロードマップ） |
+| `IMPLEMENTATION.md` | 実装ドキュメント（実装済み機能、使用方法、API） |
+| `TODO.md` | 改善点・今後のTODOリスト |
+
+### 作業ルール
+
+**重要: `tcpip_sim` ディレクトリに修正を加えた場合、必ず以下のドキュメントも更新すること:**
+
+1. **`IMPLEMENTATION.md`** - 新機能追加時は使用例とAPIを追記
+2. **`TODO.md`** - 完了したタスクのチェック、新規課題の追加
+3. **更新履歴** - `IMPLEMENTATION.md` 末尾の更新履歴に日付と内容を追記
+
+### ディレクトリ構成
+
+```
+tcpip_sim/
+├── layer1/          # 物理層 (Signal, Port, LanCable, Hub)
+├── layer2/          # データリンク層 (Ethernet, NIC, Switch, ARP)
+├── layer3/          # ネットワーク層 (未実装)
+├── layer4/          # トランスポート層 (未実装)
+└── Utils.ts         # ユーティリティ関数
+```
+
+### 型チェック
+
+```bash
+npm run astro check  # tcpip_sim の型チェックも含む
+```
