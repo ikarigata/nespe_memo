@@ -8,77 +8,18 @@ VPN（Virtual Private Network）は、インターネットなどの公衆ネッ
 
 ## VPN技術の全体像
 
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph vpn["VPN技術の分類"]
-        subgraph internet["インターネットVPN"]
-            IPSEC["IPsec-VPN"]
-            SSL["SSL-VPN"]
-        end
-
-        subgraph carrier["閉域網VPN"]
-            IPVPN["IP-VPN<br/>（MPLS利用）"]
-            WAN["広域イーサネット<br/>（VLAN利用）"]
-        end
-    end
-
-    IPSEC --> USE1["拠点間接続<br/>（Site-to-Site）"]
-    SSL --> USE2["リモートアクセス<br/>（クライアント接続）"]
-    IPVPN --> USE3["企業WAN<br/>（L3接続）"]
-    WAN --> USE4["企業WAN<br/>（L2接続）"]
-
-    style IPSEC fill:#e3f2fd
-    style SSL fill:#e3f2fd
-    style IPVPN fill:#e8f5e9
-    style WAN fill:#e8f5e9
-    style USE1 fill:#fff3e0
-    style USE2 fill:#fff3e0
-    style USE3 fill:#fff3e0
-    style USE4 fill:#fff3e0
-```
-
-</MermaidBox>
+### 主な分類
+- **インターネットVPN**
+  - IPsec-VPN: 拠点間接続（Site-to-Site）に利用
+  - SSL-VPN: リモートアクセス（クライアント接続）に利用
+- **閉域網VPN**
+  - IP-VPN（MPLS利用）: 企業WAN（L3接続）に利用
+  - 広域イーサネット（VLAN利用）: 企業WAN（L2接続）に利用
 
 
 ---
 
 ## インターネットVPN vs 閉域網VPN
-
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph compare["比較"]
-        subgraph internet["インターネットVPN"]
-            I1["低コスト"]
-            I2["導入が容易"]
-            I3["品質は<br/>ベストエフォート"]
-        end
-
-        subgraph closed["閉域網VPN"]
-            C1["高コスト"]
-            C2["通信事業者と契約"]
-            C3["品質保証<br/>（SLA）"]
-        end
-    end
-
-    internet -->|"暗号化で<br/>セキュリティ確保"| NET1["インターネット<br/>（公衆網）"]
-    closed -->|"物理的に<br/>分離"| NET2["通信事業者の<br/>閉域網"]
-
-    style I1 fill:#e3f2fd
-    style I2 fill:#e3f2fd
-    style I3 fill:#e3f2fd
-    style C1 fill:#e8f5e9
-    style C2 fill:#e8f5e9
-    style C3 fill:#e8f5e9
-```
-
-</MermaidBox>
-
 
 | 項目 | インターネットVPN | 閉域網VPN |
 |:---|:---|:---|
@@ -95,30 +36,6 @@ graph TB
 IPsecはネットワーク層（L3）で動作するセキュリティプロトコルです。
 
 ### IPsecの構成要素
-
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph ipsec["IPsecの主要プロトコル"]
-        IKE["IKE<br/>（鍵交換）"]
-        ESP["ESP<br/>（暗号化+認証）"]
-        AH["AH<br/>（認証のみ）"]
-    end
-
-    IKE -->|"SAの確立"| SA["セキュリティ<br/>アソシエーション<br/>（SA）"]
-    SA --> ESP
-    SA --> AH
-
-    style IKE fill:#ffcdd2
-    style ESP fill:#c8e6c9
-    style AH fill:#bbdefb
-    style SA fill:#fff3e0
-```
-
-</MermaidBox>
-
 
 | プロトコル | 役割 | 説明 |
 |:---|:---|:---|
@@ -160,70 +77,16 @@ sequenceDiagram
 
 ### メインモード vs アグレッシブモード
 
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph main["メインモード"]
-        M1["6回のメッセージ交換"]
-        M2["IDを暗号化"]
-        M3["高セキュリティ"]
-        M4["固定IPが必要"]
-    end
-
-    subgraph aggressive["アグレッシブモード"]
-        A1["3回のメッセージ交換"]
-        A2["IDが平文"]
-        A3["低セキュリティ"]
-        A4["動的IPでも可"]
-    end
-
-    main -->|"推奨"| USE1["拠点間接続"]
-    aggressive -->|"利用可"| USE2["リモートアクセス"]
-
-    style M1 fill:#c8e6c9
-    style M2 fill:#c8e6c9
-    style M3 fill:#c8e6c9
-    style M4 fill:#c8e6c9
-    style A1 fill:#ffcdd2
-    style A2 fill:#ffcdd2
-    style A3 fill:#ffcdd2
-    style A4 fill:#ffcdd2
-```
-
-</MermaidBox>
+| モード | メッセージ交換 | ID情報 | セキュリティ | 用途 |
+|:---|:---|:---|:---|:---|
+| **メインモード** | 6回 | 暗号化される | 高 | 拠点間接続（固定IP推奨） |
+| **アグレッシブモード** | 3回 | 平文で送られる | 低 | リモートアクセス（動的IP可） |
 
 
 ### トンネルモード vs トランスポートモード
 
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph tunnel["トンネルモード"]
-        T1["元のIPヘッダも暗号化"]
-        T2["新しいIPヘッダを付加"]
-        T3["拠点間接続向け"]
-    end
-
-    subgraph transport["トランスポートモード"]
-        TR1["IPヘッダは暗号化しない"]
-        TR2["ペイロードのみ暗号化"]
-        TR3["エンドツーエンド向け"]
-    end
-
-    style T1 fill:#e3f2fd
-    style T2 fill:#e3f2fd
-    style T3 fill:#e3f2fd
-    style TR1 fill:#fff3e0
-    style TR2 fill:#fff3e0
-    style TR3 fill:#fff3e0
-```
-
-</MermaidBox>
-
+- **トンネルモード**: 元のIPヘッダごと暗号化し、新しいIPヘッダを付加する。拠点間接続（VPNゲートウェイ間）で使用。
+- **トランスポートモード**: ペイロードのみ暗号化し、元のIPヘッダはそのまま使用する。エンドツーエンド（ホスト間）で使用。
 
 
 <MermaidBox client:visible>
@@ -272,32 +135,6 @@ SSL/TLSを利用したVPNで、主にリモートアクセス用途で使用さ�
 
 ### SSL-VPNの種類
 
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph ssl["SSL-VPNの種類"]
-        REVERSE["リバースプロキシ方式"]
-        PORT["ポートフォワーディング方式"]
-        L2["L2フォワーディング方式"]
-    end
-
-    REVERSE --> R1["Webアプリのみ<br/>ブラウザで利用"]
-    PORT --> P1["特定アプリ<br/>専用クライアント"]
-    L2 --> L1["全アプリ対応<br/>仮想NIC"]
-
-    style REVERSE fill:#e3f2fd
-    style PORT fill:#fff3e0
-    style L2 fill:#e8f5e9
-    style R1 fill:#e3f2fd
-    style P1 fill:#fff3e0
-    style L1 fill:#e8f5e9
-```
-
-</MermaidBox>
-
-
 | 方式 | 対応アプリ | クライアント | 特徴 |
 |:---|:---|:---|:---|
 | リバースプロキシ | Webのみ | ブラウザ | 導入が最も容易 |
@@ -305,37 +142,6 @@ graph TB
 | L2フォワーディング | 全アプリ | 仮想NIC | IPsec相当の機能 |
 
 ### IPsec-VPN vs SSL-VPN
-
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph ipsec["IPsec-VPN"]
-        I1["L3で動作"]
-        I2["専用クライアント必須"]
-        I3["拠点間接続に最適"]
-        I4["NATトラバーサル<br/>が必要な場合あり"]
-    end
-
-    subgraph ssl["SSL-VPN"]
-        S1["L4-L7で動作"]
-        S2["ブラウザでも可"]
-        S3["リモートアクセスに最適"]
-        S4["HTTPS（443）で<br/>FW通過が容易"]
-    end
-
-    style I1 fill:#e3f2fd
-    style I2 fill:#e3f2fd
-    style I3 fill:#e3f2fd
-    style I4 fill:#e3f2fd
-    style S1 fill:#e8f5e9
-    style S2 fill:#e8f5e9
-    style S3 fill:#e8f5e9
-    style S4 fill:#e8f5e9
-```
-
-</MermaidBox>
 
 
 ---
@@ -472,34 +278,6 @@ graph TB
 
 ### IP-VPN vs 広域イーサネット
 
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph ipvpn["IP-VPN"]
-        IP1["L3接続"]
-        IP2["ルーティングは<br/>事業者網で実施"]
-        IP3["拠点ごとに<br/>異なるセグメント"]
-    end
-
-    subgraph wan["広域イーサネット"]
-        W1["L2接続"]
-        W2["ルーティングは<br/>自社で実施"]
-        W3["拠点間で<br/>同一セグメント可"]
-    end
-
-    style IP1 fill:#e3f2fd
-    style IP2 fill:#e3f2fd
-    style IP3 fill:#e3f2fd
-    style W1 fill:#e8f5e9
-    style W2 fill:#e8f5e9
-    style W3 fill:#e8f5e9
-```
-
-</MermaidBox>
-
-
 | 項目 | IP-VPN | 広域イーサネット |
 |:---|:---|:---|
 | 接続レイヤー | L3（ネットワーク層） | L2（データリンク層） |
@@ -516,32 +294,10 @@ GRE（Generic Routing Encapsulation）とIPsecを組み合わせた構成です�
 
 ### GREの役割
 
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph gre["GREの特徴"]
-        G1["マルチキャスト対応"]
-        G2["動的ルーティング<br/>プロトコル対応"]
-        G3["非IPプロトコル<br/>のカプセル化"]
-    end
-
-    subgraph ipsec_limit["IPsecの制限"]
-        I1["ユニキャストのみ"]
-        I2["IPのみ対応"]
-    end
-
-    ipsec_limit -->|"GREで解決"| gre
-
-    style G1 fill:#c8e6c9
-    style G2 fill:#c8e6c9
-    style G3 fill:#c8e6c9
-    style I1 fill:#ffcdd2
-    style I2 fill:#ffcdd2
-```
-
-</MermaidBox>
+### GREを利用するメリット
+- マルチキャストパケットを転送可能（OSPFなどの動的ルーティングが使える）
+- IP以外のプロトコルもカプセル化可能
+- これにより、IPsecの「ユニキャスト通信のみ」という制限を克服できる。
 
 
 ### GRE over IPsecの構造
@@ -680,33 +436,6 @@ graph TB
 ---
 
 ## 試験対策のポイント
-
-
-<MermaidBox client:visible>
-
-```mermaid
-mindmap
-  root((VPN技術<br/>の要点))
-    IPsec
-      IKEフェーズ1/2
-      メインモード<br/>アグレッシブモード
-      トンネルモード<br/>トランスポートモード
-      ESP/AH
-    SSL-VPN
-      3つの方式
-      リモートアクセス向け
-      443ポート
-    閉域網VPN
-      IP-VPN（L3）
-      広域イーサネット（L2）
-      MPLS
-    設計
-      ローカルブレイクアウト
-      GRE over IPsec
-```
-
-</MermaidBox>
-
 
 1. **IPsecの動作を理解する**
    - フェーズ1でISAKMP SA、フェーズ2でIPsec SAを確立

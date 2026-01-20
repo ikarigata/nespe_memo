@@ -42,35 +42,6 @@ graph TB
 
 ## OSI参照モデル（7層）
 
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph OSI参照モデル
-        L7[第7層: アプリケーション層]
-        L6[第6層: プレゼンテーション層]
-        L5[第5層: セッション層]
-        L4[第4層: トランスポート層]
-        L3[第3層: ネットワーク層]
-        L2[第2層: データリンク層]
-        L1[第1層: 物理層]
-    end
-
-    L7 --> L6 --> L5 --> L4 --> L3 --> L2 --> L1
-
-    style L7 fill:#e1f5fe
-    style L6 fill:#e1f5fe
-    style L5 fill:#e1f5fe
-    style L4 fill:#fff3e0
-    style L3 fill:#e8f5e9
-    style L2 fill:#fce4ec
-    style L1 fill:#f3e5f5
-```
-
-</MermaidBox>
-
-
 | 層 | 名称 | 役割 | 代表的なプロトコル/機器 |
 |:---:|:---|:---|:---|
 | 7 | アプリケーション層 | ユーザーに直接サービスを提供 | HTTP, FTP, SMTP, DNS |
@@ -85,29 +56,6 @@ graph TB
 
 ## TCP/IPモデル（4層）
 
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph TCP/IPモデル
-        T4[アプリケーション層]
-        T3[トランスポート層]
-        T2[インターネット層]
-        T1[ネットワークインターフェース層]
-    end
-
-    T4 --> T3 --> T2 --> T1
-
-    style T4 fill:#e1f5fe
-    style T3 fill:#fff3e0
-    style T2 fill:#e8f5e9
-    style T1 fill:#f3e5f5
-```
-
-</MermaidBox>
-
-
 | 層 | 名称 | 役割 | 代表的なプロトコル |
 |:---:|:---|:---|:---|
 | 4 | アプリケーション層 | アプリケーション間の通信 | HTTP, FTP, SMTP, DNS, SSH |
@@ -119,55 +67,15 @@ graph TB
 
 ## 両モデルの対応関係
 
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph app["アプリケーション層グループ"]
-        direction TB
-        O7["OSI 7層<br/>アプリケーション層"]
-        O6["OSI 6層<br/>プレゼンテーション層"]
-        O5["OSI 5層<br/>セッション層"]
-        T4["TCP/IP<br/>アプリケーション層"]
-    end
-
-    subgraph trans["トランスポート層グループ"]
-        direction TB
-        O4["OSI 4層<br/>トランスポート層"]
-        T3["TCP/IP<br/>トランスポート層"]
-    end
-
-    subgraph net["ネットワーク層グループ"]
-        direction TB
-        O3["OSI 3層<br/>ネットワーク層"]
-        T2["TCP/IP<br/>インターネット層"]
-    end
-
-    subgraph phys["物理層グループ"]
-        direction TB
-        O2["OSI 2層<br/>データリンク層"]
-        O1["OSI 1層<br/>物理層"]
-        T1["TCP/IP<br/>ネットワークIF層"]
-    end
-
-    app --> trans --> net --> phys
-
-    style O7 fill:#e1f5fe
-    style O6 fill:#e1f5fe
-    style O5 fill:#e1f5fe
-    style T4 fill:#bbdefb
-    style O4 fill:#fff3e0
-    style T3 fill:#ffe0b2
-    style O3 fill:#e8f5e9
-    style T2 fill:#c8e6c9
-    style O2 fill:#f3e5f5
-    style O1 fill:#f3e5f5
-    style T1 fill:#e1bee7
-```
-
-</MermaidBox>
-
+| OSI参照モデル (7層) | TCP/IPモデル (4層) |
+|:---|:---|
+| アプリケーション層 | アプリケーション層 |
+| プレゼンテーション層 | アプリケーション層 |
+| セッション層 | アプリケーション層 |
+| トランスポート層 | トランスポート層 |
+| ネットワーク層 | インターネット層 |
+| データリンク層 | ネットワークインターフェース層 |
+| 物理層 | ネットワークインターフェース層 |
 
 ### 対応のポイント
 
@@ -285,46 +193,6 @@ sequenceDiagram
 
 ## 主な違いのまとめ
 
-
-<MermaidBox client:visible>
-
-```mermaid
-graph TB
-    subgraph org["策定組織"]
-        O1["OSI: ISO<br/>（国際標準化機構）"]
-        T1["TCP/IP: DARPA→IETF"]
-    end
-
-    subgraph layers["層の数"]
-        O2["OSI: 7層"]
-        T2["TCP/IP: 4層"]
-    end
-
-    subgraph purpose["目的"]
-        O3["OSI: 理論・教育<br/>標準化"]
-        T3["TCP/IP: 実用<br/>実装"]
-    end
-
-    subgraph usage["実用性"]
-        O4["OSI: 実装が少ない"]
-        T4["TCP/IP: インターネット<br/>の基盤"]
-    end
-
-    org --> layers --> purpose --> usage
-
-    style O1 fill:#e3f2fd
-    style O2 fill:#e3f2fd
-    style O3 fill:#e3f2fd
-    style O4 fill:#e3f2fd
-    style T1 fill:#e8f5e9
-    style T2 fill:#e8f5e9
-    style T3 fill:#e8f5e9
-    style T4 fill:#e8f5e9
-```
-
-</MermaidBox>
-
-
 | 比較項目 | OSI参照モデル | TCP/IPモデル |
 |:---|:---|:---|
 | 策定組織 | ISO（国際標準化機構） | DARPA → IETF |
@@ -352,27 +220,3 @@ graph TB
 
 4. **両モデルの対応関係を理解する**
    - OSIの上位3層がTCP/IPの1層に対応することがポイント
-
-
-<MermaidBox client:visible>
-
-```mermaid
-mindmap
-  root((試験の<br/>頻出ポイント))
-    OSI 7層
-      各層の名称
-      各層の役割
-      対応するプロトコル
-    TCP/IP 4層
-      実装ベース
-      現在のインターネット
-    対応関係
-      上位3層→1層
-      下位2層→1層
-    PDU
-      セグメント
-      パケット
-      フレーム
-```
-
-</MermaidBox>
