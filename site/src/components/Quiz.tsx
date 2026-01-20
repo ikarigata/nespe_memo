@@ -39,7 +39,7 @@ const Quiz = ({ question, children }: QuizProps) => {
         <div style={{
           marginTop: '1rem',
           padding: '1rem',
-          backgroundColor: 'var(--sl-color-gray-5, rgba(0,0,0,0.1))',
+          backgroundColor: 'var(--sl-color-gray-7, rgba(0,0,0,0.1))',
           borderRadius: '0.25rem',
           borderLeft: '4px solid var(--sl-color-accent, #2ca4b0)'
         }}>

@@ -1,15 +1,17 @@
 /* H2: Underline */
 .sl-markdown-content h2 {
-  border-bottom: 1px solid var(--sl-color-gray-5);
-  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--sl-color-gray-5);
+  padding-bottom: 0.1rem;
   margin-top: 2.5rem;
+  font-size: 1.75rem;
 }
 
 /* H3: Left Accent Border */
 .sl-markdown-content h3 {
-  border-left: 4px solid var(--sl-color-accent);
+  border-left: 3px solid var(--sl-color-accent);
   padding-left: 0.75rem;
-  margin-top: 2rem;
+  margin-top: 1rem;
+  font-size: 1.3rem;
 }
 
 /* Blockquote: Stylish Quote */

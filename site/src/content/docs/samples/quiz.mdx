@@ -4,7 +4,6 @@ description: クイズ形式で問題と答えを表示するQuizコンポーネ
 ---
 
 import Quiz from '../../../components/Quiz';
-import Tooltip from '../../../components/Tooltip';
 
 `Quiz`は、問題文を表示し、ボタンをクリックすることで答えを表示・非表示にできるインタラクティブなコンポーネントです。
 学習内容の理解度確認や、暗記項目のチェックなどに活用できます。
@@ -57,17 +56,16 @@ import Quiz from '../../../components/Quiz';
 
 ## 他のコンポーネントとの組み合わせ
 
-`Quiz`の中に`Tooltip`などの他のコンポーネントを含めることも可能です。
+`Quiz`の中に他のコンポーネントを含めることも可能です。
 
 ### コード例
 
 ```mdx
 import Quiz from '../../../components/Quiz';
-import Tooltip from '../../../components/Tooltip';
 
 <Quiz client:visible question="ネットワーク層で動作し、エラー通知や情報照会を行うプロトコルは何でしょう？">
   <div>
-    正解は <Tooltip client:visible content="ICMP" description="Internet Control Message Protocol。ネットワークの疎通確認やエラー通知に使われる。" /> です。<br/>
+    正解は ICMP です。<br/>
     Pingコマンドはこのプロトコルを使用しています。
   </div>
 </Quiz>
@@ -77,7 +75,7 @@ import Tooltip from '../../../components/Tooltip';
 
 <Quiz client:visible question="ネットワーク層で動作し、エラー通知や情報照会を行うプロトコルは何でしょう？">
   <div>
-    正解は <Tooltip client:visible content="ICMP" description="Internet Control Message Protocol。ネットワークの疎通確認やエラー通知に使われる。" /> です。<br/>
+    正解は ICMP です。<br/>
     Pingコマンドはこのプロトコルを使用しています。
   </div>
 </Quiz>

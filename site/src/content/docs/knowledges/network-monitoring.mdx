@@ -1,6 +1,7 @@
 ---
 title: ネットワーク監視とトラブルシューティング
 ---
+import { MermaidBox } from '../../../components/MermaidBox';
 
 ネットワークの安定稼働には、常時の監視と障害時の迅速な対応が不可欠です。試験では、SNMPの仕組み、バージョンごとの違い、トラブルシューティング手法（コマンドやパケット解析）が頻出です。
 
@@ -13,6 +14,8 @@ title: ネットワーク監視とトラブルシューティング
 1.  **SNMPマネージャー**: 監視を行うサーバー。
 2.  **SNMPエージェント**: 監視対象の機器（ルーター、スイッチ、サーバー）。
 3.  **MIB (Management Information Base)**: 管理情報のデータベース。ツリー構造を持つ。
+
+<MermaidBox client:visible>
 
 ```mermaid
 sequenceDiagram
@@ -31,6 +34,8 @@ sequenceDiagram
     Note over M: マネージャーは<br/>応答を返さない
 ```
 
+</MermaidBox>
+
 ### SNMPのバージョン比較
 
 | バージョン | 特徴 | セキュリティ |
@@ -44,6 +49,8 @@ sequenceDiagram
 ## トラフィック分析：NetFlow / sFlow
 
 パケットの中身ではなく、**フロー情報**（送信元/宛先IP、ポート、プロトコル、パケット数など）を統計情報として収集する技術です。
+
+<MermaidBox client:visible>
 
 ```mermaid
 graph LR
@@ -60,6 +67,8 @@ graph LR
     style router fill:#fff3e0
     style COLLECTOR fill:#e3f2fd
 ```
+
+</MermaidBox>
 
 | 技術 | 特徴 | 仕組み |
 |:---|:---|:---|
@@ -124,6 +133,8 @@ graph LR
 3.  **障害検知**: ポーリング（定期的確認）とトラップ（即時通知）の使い分け。トラップはUDPなのでロストする可能性がある点。
 4.  **コマンド出力の読み取り**: 午後問題では、`ping` や `show ip route` などの実行結果から原因を特定させることが多い。
 
+<MermaidBox client:visible>
+
 ```mermaid
 mindmap
   root((監視と<br/>トラブル対応))
@@ -144,3 +155,5 @@ mindmap
       traceroute 経路
       tcpdump キャプチャ
 ```
+
+</MermaidBox>
