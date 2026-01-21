@@ -1,8 +1,7 @@
 // LanCable.ts
 import { Port } from './Port';
 import type { Signal } from './Signal';
-
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+import { simulateCableDelay } from '../Utils';
 
 /**
  * LANケーブル（物理層デバイス）
@@ -48,7 +47,7 @@ export class LanCable {
   async transmit(fromPort: Port, signal: Signal<unknown>): Promise<void> {
     const targetPort = (fromPort === this.portA) ? this.portB : this.portA;
 
-    await delay(this.latency);
+    await simulateCableDelay(this.latency);
 
     targetPort.receive(signal);
   }

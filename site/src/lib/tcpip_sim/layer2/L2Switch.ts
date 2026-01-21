@@ -28,7 +28,7 @@ export class L2Switch {
    * ■ スイッチング処理 (Store & Forward)
    * 信号を受け取り、中身を見て、適切なポートへ転送する
    */
-  private async handleSignal(signal: Signal<any>, ingressPort: Port) {
+  private async handleSignal(signal: Signal<unknown>, ingressPort: Port) {
     
     // 信号の中身をEthernetFrameとして扱う
     const frame = signal.payload as EthernetFrame;
@@ -75,7 +75,7 @@ export class L2Switch {
    * フラッディング
    * 受信ポート以外の全ポートに送信する（ハブと同じ動き）
    */
-  private flood(signal: Signal<any>, ingressPort: Port) {
+  private flood(signal: Signal<unknown>, ingressPort: Port) {
     this.ports.forEach(p => {
       if (p !== ingressPort) {
         p.send(signal);
