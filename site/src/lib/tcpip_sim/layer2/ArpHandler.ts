@@ -43,30 +43,12 @@ export interface ArpHandlerConfig {
   requestTimeout: number;
   /** ARP Request の最大リトライ回数。デフォルト: 3 */
   maxRetries: number;
-  /** リトライ間隔（ミリ秒）。デフォルト: 1000ms */
-  retryInterval: number;
 }
 
 const DEFAULT_CONFIG: ArpHandlerConfig = {
   requestTimeout: 3000,
   maxRetries: 3,
-  retryInterval: 1000,
 };
-
-// ========================================
-// 待機中のリクエスト管理
-// ========================================
-
-/**
- * 待機中のARP解決リクエスト
- */
-interface PendingRequest {
-  targetIp: string;
-  resolve: (mac: string) => void;
-  reject: (error: Error) => void;
-  retryCount: number;
-  timeoutId: ReturnType<typeof setTimeout>;
-}
 
 // ========================================
 // ARPハンドラ クラス
@@ -95,8 +77,8 @@ export class ArpHandler {
   /** 設定 */
   private config: ArpHandlerConfig;
 
-  /** 待機中のリクエスト（IP -> PendingRequest） */
-  private pendingRequests: Map<string, PendingRequest> = new Map();
+  /** ARP Reply受信時のコールバック（IP -> callback） */
+  private replyCallbacks: Map<string, (mac: string) => void> = new Map();
 
   constructor(
     nic: NetworkInterface,
@@ -150,82 +132,67 @@ export class ArpHandler {
    * }
    */
   async resolve(targetIp: string): Promise<string> {
-    // 1. ARPテーブルを確認
+    // ARPテーブルを確認
     const cachedMac = this.arpTable.lookup(targetIp);
     if (cachedMac) {
       console.log(`[ARP] Cache hit: ${targetIp} -> ${cachedMac}`);
       return cachedMac;
     }
 
-    // 2. 既に同じIPへのリクエストが進行中なら、そのPromiseを共有
-    const existing = this.pendingRequests.get(targetIp);
-    if (existing) {
-      console.log(`[ARP] Request already pending for ${targetIp}`);
-      return new Promise((resolve, reject) => {
-        // 既存のpendingに追加のコールバックを設定
-        const originalResolve = existing.resolve;
-        const originalReject = existing.reject;
-        existing.resolve = (mac: string) => {
-          originalResolve(mac);
-          resolve(mac);
-        };
-        existing.reject = (error: Error) => {
-          originalReject(error);
-          reject(error);
-        };
-      });
-    }
+    // NOTE: 同時リクエストの相乗り（request deduplication）は未実装
+    // 教育用シミュレータのため、シンプルさを優先
+    // 本番実装では inflight Map で重複排除すべき
 
-    // 3. 新規リクエストを開始
-    return this.startArpResolution(targetIp);
+    // ARP解決を実行
+    return this.doResolve(targetIp);
   }
 
   /**
-   * ARP解決を開始（内部メソッド）
+   * ARP解決を実行（内部メソッド）
+   *
+   * リトライ付きでARP Requestを送信し、Replyを待つ。
    */
-  private startArpResolution(targetIp: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const pending: PendingRequest = {
-        targetIp,
-        resolve,
-        reject,
-        retryCount: 0,
-        timeoutId: setTimeout(() => {}, 0), // プレースホルダー
-      };
-
-      this.pendingRequests.set(targetIp, pending);
-
-      // 最初のリクエストを送信
-      this.sendArpRequestWithRetry(pending);
-    });
-  }
-
-  /**
-   * ARP Requestをリトライ付きで送信
-   */
-  private sendArpRequestWithRetry(pending: PendingRequest): void {
-    const { targetIp, retryCount } = pending;
-
-    if (retryCount >= this.config.maxRetries) {
-      // リトライ上限に達した
-      this.pendingRequests.delete(targetIp);
-      pending.reject(new Error(`ARP resolution failed for ${targetIp} after ${retryCount} retries`));
-      console.log(`[ARP] Resolution failed: ${targetIp} (max retries exceeded)`);
-      return;
-    }
+  private async doResolve(targetIp: string): Promise<string> {
+    const { maxRetries, requestTimeout } = this.config;
 
     // ARPテーブルにINCOMPLETEエントリを作成
     this.arpTable.setIncomplete(targetIp);
 
-    // ARP Requestを送信
-    this.sendArpRequest(targetIp);
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      // ARP Requestを送信
+      this.sendArpRequest(targetIp);
 
-    // タイムアウト設定
-    pending.timeoutId = setTimeout(() => {
-      pending.retryCount++;
-      console.log(`[ARP] Retry ${pending.retryCount}/${this.config.maxRetries} for ${targetIp}`);
-      this.sendArpRequestWithRetry(pending);
-    }, this.config.requestTimeout);
+      try {
+        // Replyを待機
+        return await this.waitForReply(targetIp, requestTimeout);
+      } catch {
+        // タイムアウト、リトライ
+        if (attempt < maxRetries - 1) {
+          console.log(`[ARP] Retry ${attempt + 1}/${maxRetries} for ${targetIp}`);
+        }
+      }
+    }
+
+    console.log(`[ARP] Resolution failed: ${targetIp} (max retries exceeded)`);
+    throw new Error(`ARP resolution failed for ${targetIp} after ${maxRetries} retries`);
+  }
+
+  /**
+   * ARP Replyを待機
+   */
+  private waitForReply(targetIp: string, timeout: number): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        this.replyCallbacks.delete(targetIp);
+        reject(new Error('ARP request timeout'));
+      }, timeout);
+
+      this.replyCallbacks.set(targetIp, (mac: string) => {
+        clearTimeout(timer);
+        this.replyCallbacks.delete(targetIp);
+        resolve(mac);
+      });
+    });
   }
 
   // ========================================
@@ -247,7 +214,6 @@ export class ArpHandler {
     console.log(`[ARP] Sending Request: Who has ${targetIp}? Tell ${this.ipAddress}`);
 
     // ARPパケットをEthernetフレームとしてブロードキャスト
-    // ArpPacketオブジェクトをそのまま渡す（型安全）
     this.nic.sendFrame(MAC_BROADCAST, ETHER_TYPE_ARP, arpPacket);
   }
 
@@ -271,7 +237,7 @@ export class ArpHandler {
 
     console.log(`[ARP] Sending Reply: ${this.ipAddress} is at ${this.nic.macAddress}`);
 
-    // ユニキャストで返信（ArpPacketオブジェクトをそのまま渡す）
+    // ユニキャストで返信
     this.nic.sendFrame(targetMac, ETHER_TYPE_ARP, arpPacket);
   }
 
@@ -325,13 +291,11 @@ export class ArpHandler {
    * ARP Replyを処理
    */
   private handleArpReply(packet: ArpPacket): void {
-    // 待機中のリクエストがあれば解決
-    const pending = this.pendingRequests.get(packet.senderIp);
-    if (pending) {
-      clearTimeout(pending.timeoutId);
-      this.pendingRequests.delete(packet.senderIp);
+    // 待機中のコールバックがあれば実行
+    const callback = this.replyCallbacks.get(packet.senderIp);
+    if (callback) {
       console.log(`[ARP] Resolved: ${packet.senderIp} -> ${packet.senderMac}`);
-      pending.resolve(packet.senderMac);
+      callback(packet.senderMac);
     }
   }
 
@@ -343,19 +307,14 @@ export class ArpHandler {
    * 待機中のリクエスト数
    */
   getPendingCount(): number {
-    return this.pendingRequests.size;
+    return this.replyCallbacks.size;
   }
 
   /**
    * 全てのリソースをクリーンアップ
    */
   cleanup(): void {
-    // 全ての待機中リクエストをキャンセル
-    for (const [, pending] of this.pendingRequests) {
-      clearTimeout(pending.timeoutId);
-      pending.reject(new Error('ARP handler cleanup'));
-    }
-    this.pendingRequests.clear();
+    this.replyCallbacks.clear();
     this.arpTable.clear();
   }
 }
