@@ -1,0 +1,167 @@
+---
+title: L2スイッチとNICの通信エミュレーション
+---
+
+ネットワークの基礎であるレイヤー2（データリンク層）の動作を深く理解するために、Pythonを使って簡易的な通信エミュレーションを実装してみましょう。
+
+ここでは、**NIC（Network Interface Card）** と **L2スイッチ** をクラスとして定義し、以下の動作を再現します。
+
+1. **MACアドレス学習**: スイッチが送信元のMACアドレスとポートを紐付ける。
+2. **フラッディング**: 宛先MACアドレスが不明な場合、全ポートに転送する。
+3. **フォワーディング**: 宛先MACアドレスが学習済みの場合、適切なポートのみに転送する。
+
+## 実装コード
+
+### 1. フレームとNICの定義
+
+まず、通信の単位となる「フレーム」と、端末のインターフェースである「NIC」を定義します。
+
+```python
+class Frame:
+    def __init__(self, src_mac, dst_mac, data):
+        self.src_mac = src_mac
+        self.dst_mac = dst_mac
+        self.data = data
+
+    def __str__(self):
+        return f"Frame(Src: {self.src_mac}, Dst: {self.dst_mac}, Data: {self.data})"
+
+class NIC:
+    def __init__(self, mac_address):
+        self.mac_address = mac_address
+        self.connected_link = None
+
+    def connect(self, link):
+        """リンク（スイッチやケーブル）に接続する"""
+        self.connected_link = link
+        link.plug_in(self)
+        print(f"NIC {self.mac_address} connected to {link.name}")
+
+    def send(self, dst_mac, data):
+        """フレームを送信する"""
+        if not self.connected_link:
+            print(f"NIC {self.mac_address} is not connected to anything.")
+            return
+
+        frame = Frame(self.mac_address, dst_mac, data)
+        print(f"\n[NIC {self.mac_address}] Sending: {frame}")
+        self.connected_link.receive_frame(frame, sender=self)
+
+    def receive(self, frame):
+        """フレームを受信する"""
+        if frame.dst_mac == self.mac_address or frame.dst_mac == "FF:FF:FF:FF:FF:FF":
+            print(f"[NIC {self.mac_address}] Accepted: {frame.data} from {frame.src_mac}")
+        else:
+            print(f"[NIC {self.mac_address}] Ignored frame for {frame.dst_mac}")
+```
+
+### 2. L2スイッチの定義
+
+次に、このサンプルの核となるL2スイッチを実装します。`receive_frame`メソッド内で「学習」と「転送判断」を行います。
+
+```python
+class L2Switch:
+    def __init__(self, name="Switch1"):
+        self.name = name
+        self.mac_table = {}  # MACアドレステーブル: MAC -> Port (今回はNICオブジェクト)
+        self.ports = []      # 接続されているポート（NIC）のリスト
+
+    def plug_in(self, nic):
+        """NICをポートに接続する"""
+        self.ports.append(nic)
+
+    def receive_frame(self, frame, sender):
+        """フレームを受信し、スイッチング処理を行う"""
+        port_index = self.ports.index(sender)
+        print(f"[{self.name}] Received frame from Port-{port_index} ({frame.src_mac})")
+
+        # 1. MACアドレス学習 (Source MAC Address Learning)
+        # 送信元のMACアドレスと、受信したポート（NIC）を紐付けて記憶する
+        if frame.src_mac not in self.mac_table:
+            self.mac_table[frame.src_mac] = sender
+            print(f"[{self.name}] Learned MAC: {frame.src_mac} -> Port-{port_index}")
+
+        # 2. 転送判断 (Forwarding Decision)
+        if frame.dst_mac in self.mac_table:
+            # 宛先を知っている場合（Known Unicast） -> 特定のポートへ転送
+            target_nic = self.mac_table[frame.dst_mac]
+            if target_nic != sender:
+                target_index = self.ports.index(target_nic)
+                print(f"[{self.name}] Forwarding to Port-{target_index} (Known)")
+                target_nic.receive(frame)
+        else:
+            # 宛先を知らない、またはブロードキャストの場合 -> フラッディング
+            print(f"[{self.name}] Flooding (Unknown/Broadcast)")
+            for port in self.ports:
+                if port != sender: # 受信ポート以外すべてに転送
+                    port.receive(frame)
+```
+
+## 動作確認シナリオ
+
+3台のNIC（A, B, C）をスイッチに接続し、通信させてみます。
+
+```python
+# シナリオ実行コード
+if __name__ == "__main__":
+    # スイッチの作成
+    sw = L2Switch()
+
+    # NICの作成
+    nic_a = NIC("AA:AA:AA:AA:AA:AA")
+    nic_b = NIC("BB:BB:BB:BB:BB:BB")
+    nic_c = NIC("CC:CC:CC:CC:CC:CC")
+
+    # 接続
+    nic_a.connect(sw)
+    nic_b.connect(sw)
+    nic_c.connect(sw)
+
+    # 1. AからBへ送信 (スイッチはBの場所を知らない -> フラッディング)
+    nic_a.send("BB:BB:BB:BB:BB:BB", "Hello B!")
+
+    # 2. BからAへ返信 (スイッチはAの場所を知っている -> ユニキャスト)
+    nic_b.send("AA:AA:AA:AA:AA:AA", "Hi A!")
+
+    # 3. CからAへ送信 (スイッチはAの場所を知っている -> ユニキャスト)
+    nic_c.send("AA:AA:AA:AA:AA:AA", "Hello A from C!")
+```
+
+### 実行結果
+
+上記のコードを実行すると、以下のようなログが出力されます。
+
+```text
+NIC AA:AA:AA:AA:AA:AA connected to Switch1
+NIC BB:BB:BB:BB:BB:BB connected to Switch1
+NIC CC:CC:CC:CC:CC:CC connected to Switch1
+
+[NIC AA:AA:AA:AA:AA:AA] Sending: Frame(Src: AA:AA:AA:AA:AA:AA, Dst: BB:BB:BB:BB:BB:BB, Data: Hello B!)
+[Switch1] Received frame from Port-0 (AA:AA:AA:AA:AA:AA)
+[Switch1] Learned MAC: AA:AA:AA:AA:AA:AA -> Port-0
+[Switch1] Flooding (Unknown/Broadcast)
+[NIC BB:BB:BB:BB:BB:BB] Accepted: Hello B! from AA:AA:AA:AA:AA:AA
+[NIC CC:CC:CC:CC:CC:CC] Ignored frame for BB:BB:BB:BB:BB:BB
+
+[NIC BB:BB:BB:BB:BB:BB] Sending: Frame(Src: BB:BB:BB:BB:BB:BB, Dst: AA:AA:AA:AA:AA:AA, Data: Hi A!)
+[Switch1] Received frame from Port-1 (BB:BB:BB:BB:BB:BB)
+[Switch1] Learned MAC: BB:BB:BB:BB:BB:BB -> Port-1
+[Switch1] Forwarding to Port-0 (Known)
+[NIC AA:AA:AA:AA:AA:AA] Accepted: Hi A! from BB:BB:BB:BB:BB:BB
+
+[NIC CC:CC:CC:CC:CC:CC] Sending: Frame(Src: CC:CC:CC:CC:CC:CC, Dst: AA:AA:AA:AA:AA:AA, Data: Hello A from C!)
+[Switch1] Received frame from Port-2 (CC:CC:CC:CC:CC:CC)
+[Switch1] Learned MAC: CC:CC:CC:CC:CC:CC -> Port-2
+[Switch1] Forwarding to Port-0 (Known)
+[NIC AA:AA:AA:AA:AA:AA] Accepted: Hello A from C! from CC:CC:CC:CC:CC:CC
+```
+
+## まとめ
+
+このサンプルクラスを通じて、以下の点が確認できました。
+
+- **初期状態**: スイッチは何も知らないため、最初の通信はフラッディングされる。
+- **学習**: フレームを受信すると、その「送信元MAC」をポートに学習する。
+- **効率化**: 学習済みの宛先への通信は、必要なポートにのみ転送される（ユニキャスト）。
+
+これは実際のスイッチングハブ（L2スイッチ）が行っている基本動作そのものです。
