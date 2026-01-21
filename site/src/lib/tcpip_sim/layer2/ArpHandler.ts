@@ -26,6 +26,7 @@ import {
   ETHER_TYPE_ARP,
   MAC_BROADCAST,
   formatArpPacket,
+  isArpPacket,
 } from './ArpPacket';
 import { ArpTable } from './ArpTable';
 import type { NetworkInterface } from './NetworkInterface';
@@ -246,12 +247,8 @@ export class ArpHandler {
     console.log(`[ARP] Sending Request: Who has ${targetIp}? Tell ${this.ipAddress}`);
 
     // ARPパケットをEthernetフレームとしてブロードキャスト
-    // payload を JSON 文字列にシリアライズ（現状の L2Payload = string 対応）
-    this.nic.sendFrame(
-      MAC_BROADCAST,
-      ETHER_TYPE_ARP,
-      JSON.stringify(arpPacket)
-    );
+    // ArpPacketオブジェクトをそのまま渡す（型安全）
+    this.nic.sendFrame(MAC_BROADCAST, ETHER_TYPE_ARP, arpPacket);
   }
 
   // ========================================
@@ -274,12 +271,8 @@ export class ArpHandler {
 
     console.log(`[ARP] Sending Reply: ${this.ipAddress} is at ${this.nic.macAddress}`);
 
-    // ユニキャストで返信
-    this.nic.sendFrame(
-      targetMac,
-      ETHER_TYPE_ARP,
-      JSON.stringify(arpPacket)
-    );
+    // ユニキャストで返信（ArpPacketオブジェクトをそのまま渡す）
+    this.nic.sendFrame(targetMac, ETHER_TYPE_ARP, arpPacket);
   }
 
   // ========================================
@@ -291,23 +284,16 @@ export class ArpHandler {
    *
    * NetworkInterfaceから呼び出される。
    *
-   * @param payload 受信したARPパケット（JSON文字列 or ArpPacketオブジェクト）
+   * @param payload 受信したARPパケット（L2Payload型）
    */
-  handleArpPacket(payload: string | ArpPacket): void {
-    let arpPacket: ArpPacket;
-
-    // Union型対応: stringならパース、ArpPacketならそのまま使用
-    if (typeof payload === 'string') {
-      try {
-        arpPacket = JSON.parse(payload) as ArpPacket;
-      } catch (e) {
-        console.warn('[ARP] Failed to parse ARP packet:', e);
-        return;
-      }
-    } else {
-      arpPacket = payload;
+  handleArpPacket(payload: unknown): void {
+    // 型ガードを使って安全にArpPacketか判定
+    if (!isArpPacket(payload)) {
+      console.warn('[ARP] Received invalid ARP packet:', payload);
+      return;
     }
 
+    const arpPacket = payload;
     console.log(`[ARP] Received: ${formatArpPacket(arpPacket)}`);
 
     // 送信元情報をARPテーブルに学習（常に行う）

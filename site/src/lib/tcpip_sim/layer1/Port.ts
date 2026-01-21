@@ -7,7 +7,7 @@ export class Port {
   link: LanCable | null = null;
   
   // 上位層（NIC）へデータを渡すためのコールバック
-  onReceive?: (signal: Signal<any>) => void;
+  onReceive?: (signal: Signal<unknown>) => void;
 
   constructor(id: string) {
     this.id = id;
@@ -19,14 +19,14 @@ export class Port {
   }
 
   // L1: 物理的に送り出すだけ
-  async send(signal: Signal<any>) {
+  async send(signal: Signal<unknown>) {
     if (this.link) {
       await this.link.transmit(this, signal);
     }
   }
 
   // L1: 物理的に受け取って、上位層(NIC)に丸投げ
-  receive(signal: Signal<any>) {
+  receive(signal: Signal<unknown>) {
     if (this.onReceive) {
       this.onReceive(signal);
     }

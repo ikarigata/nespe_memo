@@ -13,16 +13,21 @@
 
 ## 改善点
 
-### 1. 型定義の改善 ✅ 部分完了（2026-01-21）
+### 1. 型定義の改善 ✅ 完了（2026-01-21）
 
 **完了した内容:**
 ```typescript
 // EthernetFrame.ts
 type L2Payload = ArpPacket | string;  // Phase 1: ARPパケットのみ型安全化
+
+// Port.ts, L2Switch.ts, RepeaterHub.ts
+Signal<unknown>  // any → unknown に変更で型安全性向上
 ```
 
 - ✅ ARPパケットをUnion型に追加
-- ✅ ArpHandler.handleArpPacketをUnion型対応
+- ✅ ArpHandler.handleArpPacketを`isArpPacket`型ガードで検証
+- ✅ ArpHandler.sendArpRequest/ReplyでJSON.stringify廃止
+- ✅ `Signal<any>` → `Signal<unknown>` に全箇所変更
 - ⏳ IPv4Packet実装後にさらに拡張予定
 
 **次のステップ（Phase 2: IPv4実装時）:**
@@ -82,25 +87,15 @@ class Port {
 
 ---
 
-### 4. Utils.ts の実装
+### 4. Utils.ts の実装 ✅ 完了（2026-01-21）
 
-**現状の問題:**
-```typescript
-export { simulateCableDelay };  // 関数本体が未定義
-```
-
-**改善案:**
-```typescript
-export function simulateCableDelay(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-export function generateMacAddress(): string {
-  return Array.from({ length: 6 }, () =>
-    Math.floor(Math.random() * 256).toString(16).padStart(2, '0')
-  ).join(':');
-}
-```
+**完了した内容:**
+- ✅ `simulateCableDelay(ms)` - 遅延シミュレーション
+- ✅ `generateMacAddress()` - ランダムMACアドレス生成
+- ✅ `isValidIpAddress(ip)` - IPアドレス検証
+- ✅ `ipToNumber(ip)` / `numberToIp(num)` - IP⇔数値変換
+- ✅ `isSameNetwork(ip1, ip2, mask)` - 同一ネットワーク判定
+- ✅ LanCable.tsの重複delay関数を削除、Utils.tsの関数を使用
 
 ---
 
@@ -147,12 +142,18 @@ private ageOutEntries(): void {
 ### ✅ 型安全性の向上
 1. **L2Payload を Union型に変更** - `ArpPacket | string` でARPパケットの型安全性を確保
 2. **LanCable.transmit の型修正** - `any` → `Signal<unknown>` に変更し、L1が中身を知らない設計を明確化
-3. **ArpHandler.handleArpPacket を Union型対応** - `string | ArpPacket` の両方を受け付けるように変更
+3. **ArpHandler.handleArpPacket を型ガード対応** - `isArpPacket`型ガードで安全に検証
+4. **全ての `Signal<any>` を `Signal<unknown>` に変更** - Port.ts, RepeaterHub.ts, L2Switch.ts
 
 ### ✅ コード品質の向上
-4. **L2Switch のハードコード定数を削除** - `"FF:FF:FF:FF:FF:FF"` → `MAC_BROADCAST` に統一
-5. **LanCable の latency デフォルト値変更** - `1000ms` → `1ms` に変更（シミュレーション高速化）
-6. **JSDocコメントの充実** - LanCableクラスに詳細なドキュメントを追加
+5. **ARPパケット送受信の改善** - JSON.stringify/parse を廃止、ArpPacketオブジェクトを直接送受信
+6. **定数の重複定義を解消** - ArpPacket.ts の定数を EthernetFrame.ts から再エクスポート
+7. **ファイル名タイポ修正** - `ReperterHub.ts` → `RepeaterHub.ts`
+8. **delay関数の重複解消** - LanCable.ts のローカル関数を削除、Utils.ts を使用
+9. **バレルファイル追加** - index.ts を追加してインポートを簡素化
+10. **L2Switch のハードコード定数を削除** - `"FF:FF:FF:FF:FF:FF"` → `MAC_BROADCAST` に統一
+11. **LanCable の latency デフォルト値変更** - `1000ms` → `1ms` に変更（シミュレーション高速化）
+12. **JSDocコメントの充実** - LanCableクラスに詳細なドキュメントを追加
 
 ---
 
@@ -160,11 +161,12 @@ private ageOutEntries(): void {
 
 ### Phase 1: L2 層の完成（優先度: 高）
 
-- [ ] **ARP プロトコルの実装**
-  - [ ] `ARPPacket` インターフェース定義
-  - [ ] ARP Request/Reply のハンドリング
-  - [ ] ARP テーブル（IP→MAC マッピング）管理
-  - [ ] ARP キャッシュのタイムアウト処理
+- [x] **ARP プロトコルの実装** ✅ 完了
+  - [x] `ARPPacket` インターフェース定義
+  - [x] ARP Request/Reply のハンドリング
+  - [x] ARP テーブル（IP→MAC マッピング）管理
+  - [x] ARP キャッシュのタイムアウト処理
+  - [x] `isArpPacket`型ガードによる型安全な検証
 
 - [ ] **FCS（Frame Check Sequence）の実装**
   - [ ] CRC計算ロジック

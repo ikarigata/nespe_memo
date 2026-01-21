@@ -22,21 +22,16 @@
  * +----------------+----------------+
  */
 
-// ========================================
-// 定数定義
-// ========================================
+// 定数はEthernetFrame.tsからインポート（重複定義を避ける）
+import {
+  ETHER_TYPE_ARP,
+  ETHER_TYPE_IPV4,
+  MAC_BROADCAST,
+  MAC_UNKNOWN,
+} from './EthernetFrame';
 
-/** EtherType: ARP = 0x0806 */
-export const ETHER_TYPE_ARP = 0x0806;
-
-/** EtherType: IPv4 = 0x0800 */
-export const ETHER_TYPE_IPV4 = 0x0800;
-
-/** ブロードキャストMACアドレス */
-export const MAC_BROADCAST = 'FF:FF:FF:FF:FF:FF';
-
-/** 不明なMACアドレス (ARP Request時のターゲット) */
-export const MAC_UNKNOWN = '00:00:00:00:00:00';
+// 再エクスポート（外部から ArpPacket 経由でも使用可能に）
+export { ETHER_TYPE_ARP, ETHER_TYPE_IPV4, MAC_BROADCAST, MAC_UNKNOWN };
 
 // ========================================
 // ARPオペレーション

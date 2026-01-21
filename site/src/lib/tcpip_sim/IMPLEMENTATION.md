@@ -21,16 +21,19 @@
 
 ```
 site/src/lib/tcpip_sim/
+├── index.ts               # バレルファイル（一括エクスポート）
 ├── doc.md                 # 設計ドキュメント
 ├── TODO.md                # 改善点・今後のTODO
 ├── IMPLEMENTATION.md      # 実装ドキュメント（本ファイル）
 ├── Utils.ts               # ユーティリティ関数
 ├── layer1/                # 物理層
+│   ├── index.ts           # L1バレルファイル
 │   ├── Signal.ts          # 物理信号
 │   ├── Port.ts            # 物理ポート
 │   ├── LanCable.ts        # LANケーブル
-│   └── ReperterHub.ts     # リピータハブ
+│   └── RepeaterHub.ts     # リピータハブ
 └── layer2/                # データリンク層
+    ├── index.ts           # L2バレルファイル
     ├── EthernetFrame.ts   # Ethernetフレーム定義
     ├── NetworkInterface.ts # NIC (ネットワークインターフェース)
     ├── L2Switch.ts        # L2スイッチ
@@ -89,7 +92,7 @@ await port.send(signal);
 const cable = new LanCable(portA, portB, 100); // 100ms遅延
 ```
 
-### RepeaterHub (`layer1/ReperterHub.ts`)
+### RepeaterHub (`layer1/RepeaterHub.ts`)
 
 L1リピータハブ。受信した信号を他の全ポートにフラッディング。
 
@@ -291,9 +294,8 @@ console.log(arpHandler.arpTable.toString());
 ### 基本的なNIC間通信
 
 ```typescript
-import { NetworkInterface } from './layer2/NetworkInterface';
-import { LanCable } from './layer1/LanCable';
-import { ETHER_TYPE_IPV4 } from './layer2/EthernetFrame';
+// バレルファイルから一括インポート
+import { NetworkInterface, LanCable, ETHER_TYPE_IPV4 } from './lib/tcpip_sim';
 
 // 2つのNICを作成
 const nicA = new NetworkInterface('AA:AA:AA:AA:AA:AA', 'eth0');
@@ -320,9 +322,7 @@ await nicA.sendToIp('192.168.1.10', ETHER_TYPE_IPV4, 'Hello!');
 ### L2スイッチ経由の通信
 
 ```typescript
-import { NetworkInterface } from './layer2/NetworkInterface';
-import { L2Switch } from './layer2/L2Switch';
-import { LanCable } from './layer1/LanCable';
+import { NetworkInterface, L2Switch, LanCable, ETHER_TYPE_IPV4 } from './lib/tcpip_sim';
 
 // スイッチと3台のホスト
 const sw = new L2Switch('switch1', 4);
@@ -356,7 +356,7 @@ import {
   ipToNumber,
   numberToIp,
   isSameNetwork
-} from './Utils';
+} from './lib/tcpip_sim';
 
 // 遅延シミュレーション
 await simulateCableDelay(100); // 100ms待機
@@ -382,6 +382,13 @@ isSameNetwork('192.168.1.1', '192.168.1.100', '255.255.255.0'); // true
 
 | 日付 | 内容 |
 |------|------|
+| 2026-01-21 | **コード品質改善**: バレルファイル（index.ts）追加でインポートを簡素化 |
+| 2026-01-21 | **型安全性の向上**: `Signal<any>` → `Signal<unknown>` に変更（Port, RepeaterHub, L2Switch） |
+| 2026-01-21 | **型安全性の向上**: ArpHandler.handleArpPacketをisArpPacket型ガードで検証 |
+| 2026-01-21 | **型安全性の向上**: ARPでJSON.stringify/parseを廃止、ArpPacketオブジェクトを直接送受信 |
+| 2026-01-21 | **コード品質改善**: 定数の重複定義を解消（ArpPacket.ts → EthernetFrame.tsから再エクスポート） |
+| 2026-01-21 | **コード品質改善**: ファイル名タイポ修正（ReperterHub.ts → RepeaterHub.ts） |
+| 2026-01-21 | **コード品質改善**: LanCable.tsの重複delay関数を削除、Utils.tsの関数を使用 |
 | 2026-01-21 | **型安全性の向上**: L2PayloadをUnion型に変更（`ArpPacket \| string`） |
 | 2026-01-21 | **型安全性の向上**: LanCable.transmitの型を`any`→`Signal<unknown>`に修正 |
 | 2026-01-21 | **型安全性の向上**: ArpHandler.handleArpPacketをUnion型対応 |

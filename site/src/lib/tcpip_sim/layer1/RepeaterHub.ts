@@ -25,7 +25,7 @@ export class RepeaterHub {
   /**
    * 中身(Frame)は見ず、Signalとして扱う
    */
-  private handleSignal(signal: Signal<any>, ingressPort: Port) {
+  private handleSignal(signal: Signal<unknown>, ingressPort: Port) {
     console.log(`[Hub:${this.name}] 信号を受信 (Port: ${ingressPort.id})`);
     console.log(`  -> 増幅して全ポートへ拡散します...`);
 
