@@ -50,6 +50,7 @@ Mermaid図のラベルには日本語テキストが使用可能。
 | `doc.md` | 設計ドキュメント（全体方針、データモデル、ロードマップ） |
 | `IMPLEMENTATION.md` | 実装ドキュメント（実装済み機能、使用方法、API） |
 | `TODO.md` | 改善点・今後のTODOリスト |
+| `layer3/README.md` | Layer 3（ネットワーク層）実装TODO・設計メモ |
 
 ### 基本方針
 
