@@ -65,6 +65,50 @@ export {
 } from './layer2';
 
 // ========================================
+// Layer 3 (ネットワーク層)
+// ========================================
+export {
+  // IP Address
+  type IpAddressString,
+  type SubnetMaskString,
+  type CidrNotation,
+  type SubnetInfo,
+  DEFAULT_SUBNET_MASK,
+  IP_BROADCAST,
+  IP_LOOPBACK,
+  prefixToSubnetMask,
+  subnetMaskToPrefix,
+  getNetworkAddress,
+  getBroadcastAddress,
+  getSubnetInfo,
+  parseCidr,
+  getSubnetInfoFromCidr,
+  isInSubnet,
+  // IP Packet
+  type IpHeader,
+  type IpPacket,
+  type L3Payload,
+  IpProtocol,
+  DEFAULT_TTL,
+  ipProtocolToString,
+  createIpPacket,
+  isIpPacket,
+  formatIpPacket,
+  decrementTtl,
+  // Routing Table
+  type RouteType,
+  type RoutingEntry,
+  type RouteResult,
+  DEFAULT_ROUTE_DESTINATION,
+  DEFAULT_ROUTE_MASK,
+  RoutingTable,
+  // IP Stack
+  type ITransportLayer,
+  type InterfaceConfig,
+  IpStack,
+} from './layer3';
+
+// ========================================
 // Utilities
 // ========================================
 export {
