@@ -291,15 +291,21 @@ export class ArpHandler {
    *
    * NetworkInterfaceから呼び出される。
    *
-   * @param payload 受信したARPパケット（JSON文字列）
+   * @param payload 受信したARPパケット（JSON文字列 or ArpPacketオブジェクト）
    */
-  handleArpPacket(payload: string): void {
+  handleArpPacket(payload: string | ArpPacket): void {
     let arpPacket: ArpPacket;
-    try {
-      arpPacket = JSON.parse(payload) as ArpPacket;
-    } catch (e) {
-      console.warn('[ARP] Failed to parse ARP packet:', e);
-      return;
+
+    // Union型対応: stringならパース、ArpPacketならそのまま使用
+    if (typeof payload === 'string') {
+      try {
+        arpPacket = JSON.parse(payload) as ArpPacket;
+      } catch (e) {
+        console.warn('[ARP] Failed to parse ARP packet:', e);
+        return;
+      }
+    } else {
+      arpPacket = payload;
     }
 
     console.log(`[ARP] Received: ${formatArpPacket(arpPacket)}`);
