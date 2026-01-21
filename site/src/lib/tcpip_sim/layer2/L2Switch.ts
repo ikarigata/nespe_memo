@@ -1,6 +1,7 @@
 import { Port } from '../layer1/Port';
 import { Signal } from '../layer1/Signal';
 import type { EthernetFrame } from './EthernetFrame';
+import { MAC_BROADCAST } from './EthernetFrame';
 
 export class L2Switch {
   name: string;
@@ -50,7 +51,7 @@ export class L2Switch {
     const targetPort = this.macTable.get(frame.destinationMac);
 
     // ケースA: ブロードキャスト (全員へ)
-    if (frame.destinationMac === "FF:FF:FF:FF:FF:FF") {
+    if (frame.destinationMac === MAC_BROADCAST) {
       console.log(`  -> Broadcast: フラッディング`);
       this.flood(signal, ingressPort);
     }

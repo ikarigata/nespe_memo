@@ -11,14 +11,21 @@
 /** MACアドレスを表す型エイリアス (例: "AA:BB:CC:DD:EE:FF") */
 export type MacAddress = string;
 
+// ArpPacketのインポート（循環参照を避けるためtype-only import）
+import type { ArpPacket } from './ArpPacket';
+
 /**
  * L2のペイロード（中身）の型エイリアス
  *
- * 現状は文字列（JSON形式）で管理。
- * 将来的にはUnion型に拡張予定:
- *   type L2Payload = IPv4Packet | ArpPacket | string;
+ * 現状: ARPパケットのみ型安全化済み
+ * 将来: IPv4Packet実装後に追加予定
+ *
+ * stringは移行期の互換性のため残している:
+ * - IPv4パケット等、まだ型定義されていないプロトコル用
+ * - Phase 2（IPv4実装時）で type L2Payload = ArpPacket | IPv4Packet | string に拡張
+ * - Phase 3（L3完成後）で string を削除し完全型安全化
  */
-export type L2Payload = string;
+export type L2Payload = ArpPacket | string;
 
 /** EtherTypeの型エイリアス */
 export type EtherType = number;

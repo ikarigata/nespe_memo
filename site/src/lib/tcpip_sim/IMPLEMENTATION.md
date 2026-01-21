@@ -382,6 +382,12 @@ isSameNetwork('192.168.1.1', '192.168.1.100', '255.255.255.0'); // true
 
 | 日付 | 内容 |
 |------|------|
+| 2026-01-21 | **型安全性の向上**: L2PayloadをUnion型に変更（`ArpPacket \| string`） |
+| 2026-01-21 | **型安全性の向上**: LanCable.transmitの型を`any`→`Signal<unknown>`に修正 |
+| 2026-01-21 | **型安全性の向上**: ArpHandler.handleArpPacketをUnion型対応 |
+| 2026-01-21 | **コード品質改善**: L2SwitchのハードコードMAC_BROADCASTを定数に統一 |
+| 2026-01-21 | **パフォーマンス改善**: LanCableのlatencyデフォルト値を1000ms→1msに変更 |
+| 2026-01-21 | **ドキュメント**: LanCableクラスにJSDocコメント追加 |
 | 2026-01-20 | ARP実装（ArpPacket, ArpTable, ArpHandler） |
 | 2026-01-20 | NetworkInterfaceにARP機能統合 |
 | 2026-01-20 | EthernetFrame.tsにEtherType定数追加 |

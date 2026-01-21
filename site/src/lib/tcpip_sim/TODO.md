@@ -13,20 +13,27 @@
 
 ## 改善点
 
-### 1. 型定義の改善
+### 1. 型定義の改善 ✅ 部分完了（2026-01-21）
 
-**現状の問題:**
+**完了した内容:**
 ```typescript
 // EthernetFrame.ts
-type L2Payload = string;  // 文字列のみ
+type L2Payload = ArpPacket | string;  // Phase 1: ARPパケットのみ型安全化
 ```
 
-**改善案:**
+- ✅ ARPパケットをUnion型に追加
+- ✅ ArpHandler.handleArpPacketをUnion型対応
+- ⏳ IPv4Packet実装後にさらに拡張予定
+
+**次のステップ（Phase 2: IPv4実装時）:**
 ```typescript
-type L2Payload = IPv4Packet | ARPPacket | ICMPPacket | string;
+type L2Payload = ArpPacket | IPv4Packet | string;
 ```
 
-L2ペイロードが文字列のみの定義になっているため、L3パケットを適切に格納できない。L3実装時に型安全性を確保するため、Union型への変更が必要。
+**最終形（Phase 3: L3完成後）:**
+```typescript
+type L2Payload = ArpPacket | IPv4Packet;  // stringを削除
+```
 
 ---
 
@@ -132,6 +139,20 @@ private ageOutEntries(): void {
   }
 }
 ```
+
+---
+
+## 最近の改善履歴（2026-01-21）
+
+### ✅ 型安全性の向上
+1. **L2Payload を Union型に変更** - `ArpPacket | string` でARPパケットの型安全性を確保
+2. **LanCable.transmit の型修正** - `any` → `Signal<unknown>` に変更し、L1が中身を知らない設計を明確化
+3. **ArpHandler.handleArpPacket を Union型対応** - `string | ArpPacket` の両方を受け付けるように変更
+
+### ✅ コード品質の向上
+4. **L2Switch のハードコード定数を削除** - `"FF:FF:FF:FF:FF:FF"` → `MAC_BROADCAST` に統一
+5. **LanCable の latency デフォルト値変更** - `1000ms` → `1ms` に変更（シミュレーション高速化）
+6. **JSDocコメントの充実** - LanCableクラスに詳細なドキュメントを追加
 
 ---
 
