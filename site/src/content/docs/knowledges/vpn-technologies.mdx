@@ -4,17 +4,17 @@ title: VPN技術の比較と使い分け
 import { MermaidBox } from '../../../components/MermaidBox';
 
 
-VPN（Virtual Private Network）は、インターネットなどの公衆ネットワーク上に仮想的な専用線を構築する技術です。この記事では、IPsec-VPN、SSL-VPN、IP-VPN、広域イーサネットの違いと使い分けを整理します。
+[[VPN]]（Virtual Private Network）は、インターネットなどの公衆ネットワーク上に仮想的な専用線を構築する技術です。この記事では、[[IPsec]]-VPN、[[SSL]]-VPN、IP-VPN、広域[[Ethernet]]の違いと使い分けを整理します。
 
 ## VPN技術の全体像
 
 ### 主な分類
-- **インターネットVPN**
-  - IPsec-VPN: 拠点間接続（Site-to-Site）に利用
-  - SSL-VPN: リモートアクセス（クライアント接続）に利用
-- **閉域網VPN**
-  - IP-VPN（MPLS利用）: 企業WAN（L3接続）に利用
-  - 広域イーサネット（VLAN利用）: 企業WAN（L2接続）に利用
+- **インターネット[[VPN]]**
+  - [[IPsec]]-VPN: 拠点間接続（Site-to-Site）に利用
+  - [[SSL]]-VPN: リモートアクセス（クライアント接続）に利用
+- **閉域網[[VPN]]**
+  - IP-VPN（[[MPLS]]利用）: 企業WAN（L3接続）に利用
+  - 広域[[Ethernet]]（[[VLAN]]利用）: 企業WAN（L2接続）に利用
 
 
 ---
@@ -39,9 +39,9 @@ IPsecはネットワーク層（L3）で動作するセキュリティプロト�
 
 | プロトコル | 役割 | 説明 |
 |:---|:---|:---|
-| IKE | 鍵交換 | SA（セキュリティアソシエーション）の確立 |
-| ESP | 暗号化+認証 | データの暗号化と改ざん検知（プロトコル番号50） |
-| AH | 認証のみ | 改ざん検知のみ（プロトコル番号51） |
+| [[IKE]] | 鍵交換 | SA（セキュリティアソシエーション）の確立 |
+| [[ESP]] | [[暗号化]]+[[認証]] | データの[[暗号化]]と改ざん検知（プロトコル番号50） |
+| [[AH]] | [[認証]]のみ | 改ざん検知のみ（プロトコル番号51） |
 
 ### IKEのフェーズ
 
@@ -129,9 +129,9 @@ graph TB
 
 ---
 
-## SSL-VPN
+## [[SSL]]-VPN
 
-SSL/TLSを利用したVPNで、主にリモートアクセス用途で使用されます。
+[[SSL]]/[[TLS]]を利用した[[VPN]]で、主にリモートアクセス用途で使用されます。
 
 ### SSL-VPNの種類
 
@@ -146,9 +146,9 @@ SSL/TLSを利用したVPNで、主にリモートアクセス用途で使用さ�
 
 ---
 
-## IP-VPN（MPLS-VPN）
+## IP-VPN（[[MPLS]]-VPN）
 
-通信事業者のMPLS網を利用した閉域網VPNです。
+通信事業者の[[MPLS]]網を利用した閉域網[[VPN]]です。
 
 ### IP-VPNの仕組み
 
@@ -288,9 +288,9 @@ graph TB
 
 ---
 
-## GRE over IPsec
+## [[GRE]] over [[IPsec]]
 
-GRE（Generic Routing Encapsulation）とIPsecを組み合わせた構成です。
+[[GRE]]（Generic Routing Encapsulation）と[[IPsec]]を組み合わせた構成です。
 
 ### GREの役割
 

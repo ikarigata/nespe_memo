@@ -4,7 +4,7 @@ title: ルーティングプロトコル（OSPF・BGP）
 import { MermaidBox } from '../../../components/MermaidBox';
 
 
-動的ルーティングプロトコルは、ネットワークの経路情報を自動的に交換・学習する仕組みです。この記事では、企業ネットワークで頻出のOSPFとBGPを中心に、設計ポイントを整理します。
+動的[[ルーティング]]プロトコルは、ネットワークの経路情報を自動的に交換・学習する仕組みです。この記事では、企業ネットワークで頻出の[[OSPF]]と[[BGP]]を中心に、設計ポイントを整理します。
 
 ## ルーティングプロトコルの分類
 
@@ -46,16 +46,16 @@ graph TB
 
 | 種別 | プロトコル | アルゴリズム | 用途 |
 |:---|:---|:---|:---|
-| IGP | RIP | ベルマンフォード | 小規模ネットワーク |
-| IGP | OSPF | ダイクストラ（SPF） | 企業ネットワーク |
-| IGP | IS-IS | ダイクストラ | ISP内部 |
-| EGP | BGP | パスベクトル | ISP間接続 |
+| [[IGP]] | [[RIP]] | ベルマンフォード | 小規模ネットワーク |
+| [[IGP]] | [[OSPF]] | ダイクストラ（SPF） | 企業ネットワーク |
+| [[IGP]] | IS-IS | ダイクストラ | ISP内部 |
+| [[EGP]] | [[BGP]] | パスベクトル | ISP間接続 |
 
 ---
 
-## OSPF（Open Shortest Path First）
+## [[OSPF]]（Open Shortest Path First）
 
-OSPFはリンクステート型のIGPで、企業ネットワークで最も広く使われています。
+[[OSPF]]はリンクステート型の[[IGP]]で、企業ネットワークで最も広く使われています。
 
 ### OSPFの基本動作
 
@@ -296,9 +296,9 @@ graph TB
 
 ---
 
-## BGP（Border Gateway Protocol）
+## [[BGP]]（Border Gateway Protocol）
 
-BGPはAS（自律システム）間の経路交換に使用されるEGPです。
+[[BGP]]はAS（自律システム）間の経路交換に使用される[[EGP]]です。
 
 ### BGPの基本概念
 
@@ -340,9 +340,9 @@ graph TB
 
 | 用語 | 説明 |
 |:---|:---|
-| AS | 自律システム。同一管理下のネットワーク群 |
-| eBGP | 異なるAS間のBGPセッション |
-| iBGP | 同一AS内のBGPセッション |
+| [[AS]] | 自律システム。同一管理下のネットワーク群 |
+| [[eBGP]] | 異なるAS間のBGPセッション |
+| [[iBGP]] | 同一AS内のBGPセッション |
 | AS番号 | ASを識別する番号（2バイトまたは4バイト） |
 
 ### BGPメッセージタイプ
@@ -542,7 +542,7 @@ graph TB
 
 ---
 
-## BFD（Bidirectional Forwarding Detection）
+## [[BFD]]（Bidirectional Forwarding Detection）
 
 障害検知を高速化するプロトコルです。
 

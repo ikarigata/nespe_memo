@@ -4,7 +4,7 @@ title: メール認証技術（SPF・DKIM・DMARC）
 import { MermaidBox } from '../../../components/MermaidBox';
 
 
-なりすましメール対策として、送信ドメイン認証技術が広く使われています。この記事では、SPF・DKIM・DMARCの仕組みと設定方法を整理します。
+[[なりすまし]]メール対策として、送信ドメイン認証技術が広く使われています。この記事では、[[SPF]]・[[DKIM]]・[[DMARC]]の仕組みと設定方法を整理します。
 
 ## メール認証の全体像
 
@@ -14,9 +14,9 @@ import { MermaidBox } from '../../../components/MermaidBox';
 ```mermaid
 graph TB
     subgraph overview["送信ドメイン認証技術"]
-        SPF["SPF<br/>送信元IPの検証"]
-        DKIM["DKIM<br/>電子署名による検証"]
-        DMARC["DMARC<br/>SPF/DKIMの統合ポリシー"]
+        SPF["[[SPF]]<br/>送信元IPの検証"]
+        DKIM["[[DKIM]]<br/>電子署名による検証"]
+        DMARC["[[DMARC]]<br/>SPF/DKIMの統合ポリシー"]
     end
 
     SPF --> RESULT1["送信サーバーが<br/>正規かどうか"]
@@ -65,10 +65,10 @@ graph TB
 
 
 **2つの「From」アドレス:**
-- **エンベロープFrom（MAIL FROM）**: 実際の送信経路で使用
-- **ヘッダFrom**: 受信者に表示されるアドレス
+- **[[エンベロープFrom]]（MAIL FROM）**: 実際の送信経路で使用
+- **[[ヘッダFrom]]**: 受信者に表示されるアドレス
 
-→ この2つが異なることでなりすましが可能
+→ この2つが異なることで[[なりすまし]]が可能
 
 ---
 
@@ -87,8 +87,8 @@ sequenceDiagram
 
     Sender->>Receiver: メール送信<br/>MAIL FROM: user@example.com
 
-    Note over Receiver: SPF検証開始
-    Receiver->>DNS: example.comの<br/>TXTレコード要求
+    Note over Receiver: [[SPF]]検証開始
+    Receiver->>DNS: example.comの<br/>[[TXTレコード]]要求
     DNS-->>Receiver: v=spf1 ip4:192.0.2.0/24 -all
 
     Note over Receiver: 送信元IPと照合
@@ -134,12 +134,12 @@ v=spf1 ip4:192.0.2.0/24 include:_spf.google.com mx -all
 
 | 要素 | 説明 |
 |:---|:---|
-| `v=spf1` | SPFバージョン（必須） |
-| `ip4:` | 許可するIPv4アドレス/範囲 |
-| `ip6:` | 許可するIPv6アドレス/範囲 |
-| `include:` | 他ドメインのSPFを参照 |
-| `mx` | MXレコードのIPを許可 |
-| `a` | Aレコードのホストを許可 |
+| `v=spf1` | [[SPF]]バージョン（必須） |
+| `ip4:` | 許可する[[IPv4]]アドレス/範囲 |
+| `ip6:` | 許可する[[IPv6]]アドレス/範囲 |
+| `include:` | 他ドメインの[[SPF]]を参照 |
+| `mx` | [[MXレコード]]のIPを許可 |
+| `a` | [[Aレコード]]のホストを許可 |
 | `-all` | それ以外は拒否（Fail） |
 | `~all` | それ以外はソフトフェイル |
 | `?all` | 結果を返さない（Neutral） |
@@ -197,8 +197,8 @@ sequenceDiagram
     Note over Sender: 秘密鍵で署名
     Sender->>Receiver: メール送信<br/>（DKIM-Signatureヘッダ付き）
 
-    Note over Receiver: DKIM検証開始
-    Receiver->>DNS: セレクタ._domainkey.example.com<br/>のTXTレコード要求
+    Note over Receiver: [[DKIM]]検証開始
+    Receiver->>DNS: セレクタ._domainkey.example.com<br/>の[[TXTレコード]]要求
     DNS-->>Receiver: v=DKIM1; p=公開鍵...
 
     Note over Receiver: 公開鍵で署名を検証
@@ -327,9 +327,9 @@ sequenceDiagram
     participant Receiver as 受信サーバー
     participant DNS as DNS
 
-    Note over Receiver: SPF/DKIM検証後
+    Note over Receiver: [[SPF]]/[[DKIM]]検証後
 
-    Receiver->>DNS: _dmarc.example.com<br/>のTXTレコード要求
+    Receiver->>DNS: _dmarc.example.com<br/>の[[TXTレコード]]要求
     DNS-->>Receiver: v=DMARC1; p=reject; ...
 
     Note over Receiver: アライメント検証
@@ -381,9 +381,9 @@ graph TB
 </MermaidBox>
 
 
-**アライメントモード:**
+**[[アライメント]]モード:**
 - **strict（厳密）**: 完全一致が必要
-- **relaxed（緩和）**: 組織ドメインが一致すればOK
+- **relaxed（緩和）**: 組織[[ドメイン]]が一致すればOK
 
 ### DMARCレコードの構文
 
@@ -477,9 +477,9 @@ graph TB
 
 | 認証技術 | 検証対象 | 保護内容 |
 |:---|:---|:---|
-| SPF | エンベロープFromのドメイン | 送信サーバーの詐称防止 |
-| DKIM | メールの署名 | 改ざん検知、ドメイン認証 |
-| DMARC | ヘッダFromとの整合性 | なりすまし防止、ポリシー統一 |
+| [[SPF]] | [[エンベロープFrom]]の[[ドメイン]] | 送信サーバーの詐称防止 |
+| [[DKIM]] | メールの署名 | 改ざん検知、[[ドメイン]]認証 |
+| [[DMARC]] | [[ヘッダFrom]]との整合性 | [[なりすまし]]防止、ポリシー統一 |
 
 ---
 
@@ -543,9 +543,9 @@ graph TB
 
 | ヘッダ | 役割 |
 |:---|:---|
-| ARC-Authentication-Results | その時点での認証結果を記録 |
-| ARC-Message-Signature | メッセージ内容の署名 |
-| ARC-Seal | ARCチェーン全体の封印（改ざん防止） |
+| [[ARC-Authentication-Results]] | その時点での認証結果を記録 |
+| [[ARC-Message-Signature]] | メッセージ内容の署名 |
+| [[ARC-Seal]] | [[ARC]]チェーン全体の封印（改ざん防止） |
 
 ---
 
