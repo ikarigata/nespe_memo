@@ -42,21 +42,18 @@ const remarkPerplexitySearch: Plugin<[], Root> = () => {
 
         // Perplexity検索リンクノード（ネットワークスペシャリスト試験対策用プロンプト）
         const prompt = `ネットワークスペシャリスト試験の対策として、${searchTerm}について解説してほしい
-
 その際は
+・用語自体の詳しい意味
 ・登場時の歴史的な文脈
 ・概念的なレイヤー関係
 ・その技術が解決した課題
 ・その技術が抱える課題
 ・隣接する諸概念とのその関係性
 ・ネットワークスペシャリストの過去問での問われ方
-
 について各50字〜200字で触れて
-
 また、上記の記載にあたっては
 ・箇条書きを多用する
 ・体言止めは避け、文の形で書く
-
 を意識して`;
         const searchUrl = `https://www.perplexity.ai/search?q=${encodeURIComponent(prompt)}`;
         newNodes.push({
