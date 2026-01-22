@@ -3,9 +3,13 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import mermaid from 'astro-mermaid';
 import react from '@astrojs/react';
+import remarkGoogleSearch from './src/plugins/remark-google-search.ts';
 
 // https://astro.build/config
 export default defineConfig({
+	markdown: {
+		remarkPlugins: [remarkGoogleSearch],
+	},
 	integrations: [
 		starlight({
 			title: 'ネスぺ学習メモ',
