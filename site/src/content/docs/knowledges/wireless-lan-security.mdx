@@ -3,16 +3,16 @@ title: 無線LANセキュリティ
 ---
 import { MermaidBox } from '../../../components/MermaidBox';
 
-無線LANは電波を使用するため、有線LANに比べて盗聴や不正アクセスのリスクが高くなります。そのため、強力な認証と暗号化技術が不可欠です。本記事では、WPA2/WPA3を中心としたセキュリティ規格と、企業で利用される802.1X認証について解説します。
+[[無線LAN]]は電波を使用するため、有線LANに比べて盗聴や不正アクセスのリスクが高くなります。そのため、強力な[[認証]]と[[暗号化]]技術が不可欠です。本記事では、[[WPA2]]/[[WPA3]]を中心としたセキュリティ規格と、企業で利用される[[IEEE 802.1X]][[認証]]について解説します。
 
 ## セキュリティ規格の変遷
 
-| 規格 | 策定年 | 暗号化アルゴリズム | 改ざん検知 | 認証方式 | 現状 |
+| 規格 | 策定年 | [[暗号化]]アルゴリズム | 改ざん検知 | [[認証]]方式 | 現状 |
 |:---|:---|:---|:---|:---|:---|
-| WEP | 1997 | RC4 | ICV | 共有鍵 | **使用禁止**（脆弱性あり） |
-| WPA | 2002 | TKIP (RC4) | Michael | PSK / 802.1X | 使用非推奨 |
-| **WPA2** | 2004 | **AES (CCMP)** | CBC-MAC | PSK / 802.1X | **現在も主流** |
-| **WPA3** | 2018 | **AES (GCMP/CCMP)** | GMAC/CBC-MAC | SAE / 802.1X | 普及拡大中 |
+| [[WEP]] | 1997 | RC4 | ICV | 共有鍵 | **使用禁止**（脆弱性あり） |
+| [[WPA]] | 2002 | [[TKIP]] (RC4) | Michael | PSK / [[IEEE 802.1X]] | 使用非推奨 |
+| **[[WPA2]]** | 2004 | **[[AES]] (CCMP)** | CBC-MAC | PSK / [[IEEE 802.1X]] | **現在も主流** |
+| **[[WPA3]]** | 2018 | **[[AES]] (GCMP/CCMP)** | GMAC/CBC-MAC | [[SAE]] / [[IEEE 802.1X]] | 普及拡大中 |
 
 ### パーソナルモード vs エンタープライズモード
 
@@ -23,13 +23,13 @@ import { MermaidBox } from '../../../components/MermaidBox';
 
 ---
 
-## IEEE 802.1X認証の仕組み
+## [[IEEE 802.1X]][[認証]]の仕組み
 
-企業向け無線LANで標準的に使用されるポートベース認証の枠組みです。以下の3つの要素で構成されます。
+企業向け[[無線LAN]]で標準的に使用されるポートベース[[認証]]の枠組みです。以下の3つの要素で構成されます。
 
 1.  **サプリカント (Supplicant)**: クライアント端末（PC、スマホなど）
-2.  **オーセンティケータ (Authenticator)**: 無線LANアクセスポイント (AP)
-3.  **認証サーバー (Authentication Server)**: RADIUSサーバー
+2.  **オーセンティケータ (Authenticator)**: [[無線LAN]]アクセスポイント (AP)
+3.  **[[認証]]サーバー (Authentication Server)**: [[RADIUS]]サーバー
 
 ### 認証シーケンス
 
@@ -63,8 +63,8 @@ sequenceDiagram
 
 </MermaidBox>
 
-- **EAP (Extensible Authentication Protocol)**: 認証プロトコルのコンテナ。実際の認証手順は内部のメソッド（EAP-TLSなど）によって異なります。
-- **RADIUS (Remote Authentication Dial In User Service)**: 認証・認可・アカウンティングを行うプロトコル。UDP 1812(Auth)/1813(Acct)を使用。
+- **[[EAP]] (Extensible Authentication Protocol)**: [[認証]]プロトコルのコンテナ。実際の[[認証]]手順は内部のメソッド（[[EAP-TLS]]など）によって異なります。
+- **[[RADIUS]] (Remote Authentication Dial In User Service)**: [[認証]]・認可・アカウンティングを行うプロトコル。[[UDP]] 1812(Auth)/1813(Acct)を使用。
 
 ---
 
