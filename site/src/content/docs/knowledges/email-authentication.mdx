@@ -199,7 +199,7 @@ sequenceDiagram
 
     Note over Receiver: [[DKIM]]検証開始
     Receiver->>DNS: セレクタ._domainkey.example.com<br/>の[[TXTレコード]]要求
-    DNS-->>Receiver: v=DKIM1; p=公開鍵...
+    DNS-->>Receiver: v=DKIM1；p=公開鍵...
 
     Note over Receiver: 公開鍵で署名を検証
     alt 署名が有効
@@ -330,7 +330,7 @@ sequenceDiagram
     Note over Receiver: [[SPF]]/[[DKIM]]検証後
 
     Receiver->>DNS: _dmarc.example.com<br/>の[[TXTレコード]]要求
-    DNS-->>Receiver: v=DMARC1; p=reject; ...
+    DNS-->>Receiver: v=DMARC1；p=reject；...
 
     Note over Receiver: アライメント検証
     alt SPFまたはDKIMがPassかつアライメント一致
