@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "astro dev --host",
     "start": "astro dev",
-    "build": "astro build",
+    "validate:mermaid": "node scripts/validate-mermaid.mjs",
+    "build": "npm run validate:mermaid && astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.6",
+    "jsdom": "^27.4.0",
     "typescript": "^5.9.3"
   }
 }
