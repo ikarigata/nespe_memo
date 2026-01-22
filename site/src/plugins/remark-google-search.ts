@@ -6,7 +6,7 @@ import type { Plugin } from 'unified';
  * remarkプラグイン: [[用語]] をGoogle検索リンクに変換
  *
  * 使用例:
- *   [[TCP]] → <a href="https://www.google.com/search?q=ネットワークスペシャリスト試験対策の観点で、TCPについて簡潔かつ丁寧に解説して。特に、その技術や概念が持つ歴史的・空間的文脈にも触れてほしい">TCP</a>
+ *   [[TCP]] → <a href="https://www.google.com/search?q=ネットワークスペシャリスト試験対策の観点で、TCPについて簡潔かつ丁寧に解説して">TCP</a>
  */
 const remarkGoogleSearch: Plugin<[], Root> = () => {
   return (tree) => {
@@ -41,7 +41,7 @@ const remarkGoogleSearch: Plugin<[], Root> = () => {
         }
 
         // Google検索リンクノード
-        const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(`ネットワークスペシャリスト試験対策の観点で、${searchTerm}について簡潔かつ丁寧に解説して。特に、その技術や概念が持つ歴史的・空間的文脈にも触れてほしい`)}`;
+        const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(`ネットワークスペシャリスト試験対策の観点で、${searchTerm}について簡潔かつ丁寧に解説して`)}`;
         newNodes.push({
           type: 'link',
           url: searchUrl,
