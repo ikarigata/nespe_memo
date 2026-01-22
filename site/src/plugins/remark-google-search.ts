@@ -3,12 +3,12 @@ import type { Root, Text, Link } from 'mdast';
 import type { Plugin } from 'unified';
 
 /**
- * remarkプラグイン: [[用語]] をGoogle検索リンクに変換
+ * remarkプラグイン: [[用語]] をPerplexity検索リンクに変換
  *
  * 使用例:
- *   [[TCP]] → <a href="https://www.google.com/search?q=ネットワークスペシャリスト TCP">TCP</a>
+ *   [[TCP]] → Perplexity検索リンク（ネットワークスペシャリスト試験対策用プロンプト付き）
  */
-const remarkGoogleSearch: Plugin<[], Root> = () => {
+const remarkPerplexitySearch: Plugin<[], Root> = () => {
   return (tree) => {
     visit(tree, 'text', (node: Text, index, parent) => {
       if (!parent || index === undefined) return;
@@ -40,8 +40,10 @@ const remarkGoogleSearch: Plugin<[], Root> = () => {
           });
         }
 
-        // Google検索リンクノード
-        const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(`ネットワークスペシャリスト ${searchTerm}`)}`;
+        // Perplexity検索リンクノード（ネットワークスペシャリスト試験対策用プロンプト）
+        const prompt = `ネットワークスペシャリスト試験の対策として、${searchTerm}について簡潔に解説して
+特に、その技術や概念の歴史的・空間的な文脈での位置づけや、それが解決する課題・抱える課題などについても触れつつ説明してほしい`;
+        const searchUrl = `https://www.perplexity.ai/search?q=${encodeURIComponent(prompt)}`;
         newNodes.push({
           type: 'link',
           url: searchUrl,
@@ -70,4 +72,4 @@ const remarkGoogleSearch: Plugin<[], Root> = () => {
   };
 };
 
-export default remarkGoogleSearch;
+export default remarkPerplexitySearch;

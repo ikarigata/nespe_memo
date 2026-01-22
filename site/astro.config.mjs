@@ -3,13 +3,13 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import mermaid from 'astro-mermaid';
 import react from '@astrojs/react';
-import remarkGoogleSearch from './src/plugins/remark-google-search.ts';
+import remarkPerplexitySearch from './src/plugins/remark-google-search.ts';
 import rehypeTableWrapper from './src/plugins/rehype-table-wrapper.ts';
 
 // https://astro.build/config
 export default defineConfig({
 	markdown: {
-		remarkPlugins: [remarkGoogleSearch],
+		remarkPlugins: [remarkPerplexitySearch],
 		rehypePlugins: [rehypeTableWrapper],
 	},
 	integrations: [
