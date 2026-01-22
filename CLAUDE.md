@@ -13,9 +13,10 @@
 ```bash
 npm install          # 依存関係のインストール
 npm run dev          # 開発サーバー起動 (localhost:4321)
-npm run build        # 本番用ビルド (./dist/ に出力)
+npm run build        # 本番用ビルド (./dist/ に出力) ※Mermaid構文検証を含む
 npm run preview      # 本番ビルドのプレビュー
 npm run astro check  # TypeScript型チェック
+npm run validate:mermaid  # Mermaid構文のみ検証
 ```
 
 ## アーキテクチャ
@@ -38,6 +39,28 @@ title: ページタイトル
 ```
 
 Mermaid図のラベルには日本語テキストが使用可能。
+
+### Mermaid構文検証
+
+`npm run build` 実行時にMermaid構文エラーがあるとビルドが失敗する。エラー時はファイル名・行番号・詳細が表示される。
+
+**注意すべき特殊文字:**
+- **セミコロン `;`** - sequenceDiagramで行終端として解釈される → 全角 `；` を使用
+- **括弧 `()`** - ノード形状として解釈される → ラベルを引用符で囲む `["テキスト(補足)"]`
+
+```mermaid
+# NG: セミコロンがあるとエラー
+DNS-->>Receiver: v=DKIM1; p=公開鍵
+
+# OK: 全角セミコロンを使用
+DNS-->>Receiver: v=DKIM1；p=公開鍵
+
+# NG: 括弧がノード形状として解釈される
+TAG[802.1Qタグ(4バイト)]
+
+# OK: 引用符で囲む
+TAG["802.1Qタグ(4バイト)"]
+```
 
 ## TCP/IP シミュレータ (`site/src/lib/tcpip_sim/`)
 
