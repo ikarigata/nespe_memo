@@ -38,3 +38,18 @@
 .sl-anchor-link {
   display: none;
 }
+
+/* Table: Horizontal scroll on narrow screens */
+.sl-markdown-content table {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.sl-markdown-content table tbody,
+.sl-markdown-content table thead {
+  display: table;
+  width: 100%;
+}
