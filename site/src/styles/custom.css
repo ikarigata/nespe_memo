@@ -38,3 +38,35 @@
 .sl-anchor-link {
   display: none;
 }
+
+/* Table: Horizontal scroll on narrow screens */
+.sl-markdown-content .table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+.sl-markdown-content .table-wrapper table {
+  white-space: nowrap;
+}
+
+/* Table: Sticky first column (default) */
+.sl-markdown-content .table-wrapper--sticky th:first-child,
+.sl-markdown-content .table-wrapper--sticky td:first-child {
+  position: sticky;
+  left: 0;
+  background-color: var(--sl-color-bg);
+  z-index: 1;
+}
+
+/* Shadow to indicate scrollable content */
+.sl-markdown-content .table-wrapper--sticky th:first-child::after,
+.sl-markdown-content .table-wrapper--sticky td:first-child::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -4px;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(to right, rgba(0,0,0,0.1), transparent);
+}
