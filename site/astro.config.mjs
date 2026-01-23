@@ -5,11 +5,12 @@ import mermaid from 'astro-mermaid';
 import react from '@astrojs/react';
 import remarkPerplexitySearch from './src/plugins/remark-google-search.ts';
 import rehypeTableWrapper from './src/plugins/rehype-table-wrapper.ts';
+import remarkZennDirectives, { remarkDirective } from './src/plugins/remark-zenn-directives.ts';
 
 // https://astro.build/config
 export default defineConfig({
 	markdown: {
-		remarkPlugins: [remarkPerplexitySearch],
+		remarkPlugins: [remarkDirective, remarkZennDirectives, remarkPerplexitySearch],
 		rehypePlugins: [rehypeTableWrapper],
 	},
 	integrations: [

@@ -19,6 +19,7 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-zoom-pan-pinch": "^3.7.0",
+    "remark-directive": "^4.0.0",
     "sharp": "^0.34.2"
   },
   "devDependencies": {

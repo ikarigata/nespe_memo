@@ -70,3 +70,91 @@
   width: 4px;
   background: linear-gradient(to right, rgba(0,0,0,0.1), transparent);
 }
+
+/* Zenn-style Message Box */
+.sl-markdown-content .zenn-message {
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  border-radius: 6px;
+  border-left: 4px solid #3b82f6; /* blue-500 */
+  background-color: rgba(59, 130, 246, 0.1); /* blue-500 with opacity */
+  position: relative;
+}
+
+.sl-markdown-content .zenn-message::before {
+  content: 'ℹ️';
+  position: absolute;
+  left: 0.75rem;
+  top: 1rem;
+  font-size: 1.25rem;
+}
+
+.sl-markdown-content .zenn-message > :first-child {
+  margin-top: 0;
+  margin-left: 2rem;
+}
+
+.sl-markdown-content .zenn-message > :last-child {
+  margin-bottom: 0;
+  margin-left: 2rem;
+}
+
+/* Zenn-style Alert Message Box */
+.sl-markdown-content .zenn-message-alert {
+  border-left-color: #ef4444; /* red-500 */
+  background-color: rgba(239, 68, 68, 0.1); /* red-500 with opacity */
+}
+
+.sl-markdown-content .zenn-message-alert::before {
+  content: '⚠️';
+}
+
+/* Zenn-style Details (Collapsible) */
+.sl-markdown-content .zenn-details {
+  padding: 0;
+  margin: 1.5rem 0;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.sl-markdown-content .zenn-details-summary {
+  padding: 1rem 1.25rem;
+  background-color: var(--sl-color-gray-6);
+  cursor: pointer;
+  user-select: none;
+  font-weight: 600;
+  list-style: none;
+  margin: 0;
+}
+
+.sl-markdown-content .zenn-details-summary::-webkit-details-marker {
+  display: none;
+}
+
+.sl-markdown-content .zenn-details-summary::before {
+  content: '▶';
+  display: inline-block;
+  margin-right: 0.5rem;
+  transition: transform 0.2s;
+}
+
+.sl-markdown-content .zenn-details[open] .zenn-details-summary::before {
+  transform: rotate(90deg);
+}
+
+.sl-markdown-content .zenn-details[open] .zenn-details-summary {
+  border-bottom: 1px solid var(--sl-color-gray-5);
+}
+
+.sl-markdown-content .zenn-details > :not(summary) {
+  padding: 1rem 1.25rem;
+}
+
+.sl-markdown-content .zenn-details > :not(summary):first-of-type {
+  margin-top: 0;
+}
+
+.sl-markdown-content .zenn-details > :not(summary):last-child {
+  margin-bottom: 0;
+}
