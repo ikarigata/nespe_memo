@@ -30,6 +30,10 @@ export default defineConfig({
 					label: 'サンプル',
 					autogenerate: { directory: 'samples' },
 				},
+				{
+					label: '過去問',
+					autogenerate: { directory: 'kakomons' },
+				},
 			],
 		}),
 		mermaid(),
